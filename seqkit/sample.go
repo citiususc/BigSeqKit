@@ -14,6 +14,7 @@ type SampleOptions struct {
 	Seed       *int
 	Number     *int
 	Proportion *float32
+	TwoPass    *bool
 }
 
 func (this *SampleOptions) setDefaults() *SampleOptions {
@@ -21,6 +22,7 @@ func (this *SampleOptions) setDefaults() *SampleOptions {
 	setDefault(&this.Seed, 11)
 	setDefault(&this.Number, 0)
 	setDefault(&this.Proportion, 0)
+	setDefault(&this.TwoPass, false)
 
 	return this
 }
@@ -45,6 +47,11 @@ func (this *SeqKitSampleOptions) Proportion(v float32) *SeqKitSampleOptions {
 	return this
 }
 
+func (this *SeqKitSampleOptions) TwoPass(v bool) *SeqKitSampleOptions {
+	this.inner.TwoPass = &v
+	return this
+}
+
 func Sample(input *api.IDataFrame[string], o *SeqKitSampleOptions) (*api.IDataFrame[string], error) {
 	if o == nil {
 		o = &SeqKitSampleOptions{}
@@ -65,8 +72,10 @@ func Sample(input *api.IDataFrame[string], o *SeqKitSampleOptions) (*api.IDataFr
 
 	fraction := float64(*opts.Proportion)
 	if *opts.Number > 0 {
-		if err := input.Cache(api.PRESERVE); err != nil {
-			return nil, err
+		if !*opts.TwoPass {
+			if err := input.Cache(api.PRESERVE); err != nil {
+				return nil, err
+			}
 		}
 		n, err := input.Count()
 		if err != nil {

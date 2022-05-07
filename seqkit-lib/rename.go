@@ -64,8 +64,7 @@ func (this *RenamePrepare) Call(v1 iterator.IReadIterator[string], context api.I
 			k = string(record.ID)
 		}
 
-		bb := record.Format(*this.opts.Config.LineWidth)
-		result = append(result, *ipair.New(k, string(bb[:len(bb)-1])))
+		result = append(result, *ipair.New(k, string(record.Format(*this.opts.Config.LineWidth))))
 	}
 	return result, nil
 }

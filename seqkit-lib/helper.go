@@ -86,3 +86,16 @@ func (this *ArrayReader) Read(p []byte) (n int, err error) {
 
 	return
 }
+
+func mergeBytes(aa ...[]byte) []byte {
+	n := 0
+	for _, a := range aa {
+		n += len(a)
+	}
+	merge := make([]byte, n)
+	i := 0
+	for _, a := range aa {
+		i += copy(merge[i:], a)
+	}
+	return merge
+}
