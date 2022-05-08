@@ -92,7 +92,7 @@ func (this *RmDupPrepare) Call(v1 iterator.IReadIterator[string], context api.IC
 }
 
 func NewRmDupCheck() any {
-	return &RmDupPrepare{}
+	return &RmDupCheck{}
 }
 
 type RmDupCheck struct {

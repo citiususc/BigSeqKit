@@ -41,6 +41,9 @@ var helpUnquotedComma = `possible unquoted comma detected, please use double quo
 func (this *Grep) Before(context api.IContext) (err error) {
 	this.opts = seqkit.StringToOptions[seqkit.GrepOptions](context.Vars()["opts"].(string))
 	this.alphabet, err = this.opts.Config.GetAlphabet()
+	if err != nil {
+		return err
+	}
 	seq.AlphabetGuessSeqLengthThreshold = *this.opts.Config.AlphabetGuessSeqLength
 	seq.ValidateSeq = false
 	//fai.MapWholeFile = false ¿?
@@ -187,9 +190,9 @@ func (this *Grep) Before(context api.IContext) (err error) {
 		}
 		if !*this.opts.Config.Quiet {
 			if len(this.patterns) == 0 {
-				log.Warn("%d patterns loaded from file", len(this.patterns))
+				log.Warn(fmt.Sprintf("%d patterns loaded from file", len(this.patterns)))
 			} else {
-				log.Info("%d patterns loaded from file", len(this.patterns))
+				log.Info(fmt.Sprintf("%d patterns loaded from file", len(this.patterns)))
 			}
 		}
 	} else {
@@ -246,7 +249,7 @@ func (this *Grep) Before(context api.IContext) (err error) {
 		}
 	}
 
-	return err
+	return nil
 }
 
 func (this *Grep) grepBySeqMismatches(pid int64, it iterator.IReadIterator[string], context api.IContext) ([]string, error) {
