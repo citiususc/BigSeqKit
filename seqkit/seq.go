@@ -154,9 +154,9 @@ func (this *SeqKitSeqOptions) MaxQual(v float64) *SeqKitSeqOptions {
 	return this
 }
 
-func Seq(input *api.IDataFrame[string], o *SeqKitHeadOptions) (*api.IDataFrame[string], error) {
+func Seq(input *api.IDataFrame[string], o *SeqKitSeqOptions) (*api.IDataFrame[string], error) {
 	if o == nil {
-		o = &SeqKitHeadOptions{}
+		o = &SeqKitSeqOptions{}
 	}
 	opts := o.inner
 	opts.setDefaults()

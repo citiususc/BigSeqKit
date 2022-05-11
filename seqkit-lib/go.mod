@@ -27,4 +27,4 @@ require (
 
 replace seqkit => ../seqkit
 
-replace ignis => /opt/ignis/core/go/ignis
+replace ignis => /home/cesar/core-go/ignis

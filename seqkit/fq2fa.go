@@ -22,7 +22,12 @@ func (this *SeqKitFq2FaOptions) Config(v *SeqKitConfig) *SeqKitFq2FaOptions {
 	return this
 }
 
-func Fq2Fa(input *api.IDataFrame[string], o *SeqKitHeadOptions) (*api.IDataFrame[string], error) {
+func Fq2Fa(input *api.IDataFrame[string], o *SeqKitFq2FaOptions) (*api.IDataFrame[string], error) {
+	if o == nil {
+		o = &SeqKitFq2FaOptions{}
+	}
+	opts := o.inner
+	opts.setDefaults()
 	libprepare, err := api.AddParam(libSource("Fq2Fa"), "opts", OptionsToString(o.inner))
 	if err != nil {
 		return nil, err

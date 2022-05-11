@@ -37,7 +37,12 @@ func (this *SeqKitFa2FqOptions) OnlyPositiveStrand(v bool) *SeqKitFa2FqOptions {
 	return this
 }
 
-func Fa2Fq(input *api.IDataFrame[string], o *SeqKitHeadOptions) (*api.IDataFrame[string], error) {
+func Fa2Fq(input *api.IDataFrame[string], o *SeqKitFa2FqOptions) (*api.IDataFrame[string], error) {
+	if o == nil {
+		o = &SeqKitFa2FqOptions{}
+	}
+	opts := o.inner
+	opts.setDefaults()
 	libprepare, err := api.AddParam(libSource("Fa2Fq"), "opts", OptionsToString(o.inner))
 	if err != nil {
 		return nil, err
