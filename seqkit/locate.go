@@ -120,7 +120,7 @@ func Locate(input *api.IDataFrame[string], o *SeqKitLocateOptions) (*api.IDataFr
 	}
 	opts := o.inner
 	opts.setDefaults()
-	libprepare, err := api.AddParam(libSource("Locate"), "opts", OptionsToString(o.inner))
+	libprepare, err := api.AddParam(libSource("Locate"), "opts", OptionsToString(opts))
 	if err != nil {
 		return nil, err
 	}

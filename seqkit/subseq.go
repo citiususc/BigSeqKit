@@ -91,7 +91,7 @@ func Subseq(input *api.IDataFrame[string], o *SeqKitSubseqOptions) (*api.IDataFr
 	opts := o.inner
 	opts.setDefaults()
 
-	libprepare, err := api.AddParam(libSource("SubseqTransform"), "opts", OptionsToString(o.inner))
+	libprepare, err := api.AddParam(libSource("SubseqTransform"), "opts", OptionsToString(opts))
 	if err != nil {
 		return nil, err
 	}

@@ -48,7 +48,9 @@ func OptionsToString[T any](v T) string {
 	var buffer bytes.Buffer
 	enc := json.NewEncoder(&buffer)
 	err := enc.Encode(v)
-	_ = err
+	if err != nil {
+		panic(err)
+	}
 	return buffer.String()
 }
 
@@ -57,7 +59,9 @@ func StringToOptions[T any](v string) T {
 	dec := json.NewDecoder(buffer)
 	val := new(T)
 	err := dec.Decode(val)
-	_ = err
+	if err != nil {
+		panic(err)
+	}
 	return *val
 }
 
@@ -132,7 +136,7 @@ func fixer(input *api.IDataFrame[string], delim string) (*api.IDataFrame[string]
 	if err != nil {
 		return nil, err
 	}
-	return api.Map[string, string](input, fixer)
+	return api.MapPartitions[string, string](input, fixer)
 }
 
 func ReadFASTA(path string, worker *api.IWorker) (*api.IDataFrame[string], error) {

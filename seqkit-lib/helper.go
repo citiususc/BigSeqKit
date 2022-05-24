@@ -21,7 +21,7 @@ func NewReadFixer() any {
 }
 
 type ReadFixer struct {
-	base.IMap[string, string]
+	base.IMapPartitions[string, string]
 	function.IAfterNone
 	delim string
 }
@@ -31,13 +31,29 @@ func (this *ReadFixer) Before(context api.IContext) (err error) {
 	return nil
 }
 
-func (this *ReadFixer) Call(v string, context api.IContext) (string, error) {
-	return this.delim + v[:len(v)-1], nil
+func (this *ReadFixer) Call(it iterator.IReadIterator[string], context api.IContext) ([]string, error) {
+	result := make([]string, 0, 100)
+	for it.HasNext() {
+		v, err := it.Next()
+		if err != nil {
+			return nil, err
+		}
+		if len(v) == 0 {
+			continue
+		}
+		if v[len(v)-1] == '\n' {
+			result = append(result, this.delim+v[:len(v)-1])
+		} else {
+			result = append(result, this.delim+v)
+		}
+	}
+	return result, nil
 }
 
 func NewIteratorReader(it iterator.IReadIterator[string]) io.Reader {
 	return &IteratorReader{
-		it: it,
+		it:  it,
+		pos: 1, //no \n in the first read
 	}
 }
 
@@ -48,21 +64,28 @@ type IteratorReader struct {
 }
 
 func (this *IteratorReader) Read(p []byte) (n int, err error) {
-	if this.pos == len(this.buffer) {
-		if this.it.HasNext() {
-			this.buffer, err = this.it.Next()
-			this.pos = 0
-			if err != nil {
+	for n < len(p)-1 {
+		if this.pos >= len(this.buffer) {
+			if this.pos == len(this.buffer) {
+				p[n] = '\n'
+				n++
+				this.pos++
+				continue
+			} else if this.it.HasNext() {
+				this.buffer, err = this.it.Next()
+				this.pos = 0
+				if err != nil {
+					return
+				}
+			} else {
+				err = io.EOF
 				return
 			}
-		} else {
-			err = io.EOF
-			return
 		}
+		n2 := copy(p[n:], this.buffer[this.pos:])
+		this.pos += n2
+		n += n2
 	}
-	n = copy(p, this.buffer[this.pos:])
-	this.pos += n
-
 	return
 }
 

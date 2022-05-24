@@ -56,6 +56,8 @@ func (this *SeqTransform) Before(context api.IContext) (err error) {
 	seq.ValidateSeq = *this.opts.ValidateSeq
 	seq.ValidateWholeSeq = false
 	seq.ValidSeqLengthThreshold = *this.opts.ValidateSeqLength
+	seq.ValidSeqThreads = 1
+	seq.ComplementThreads = 1
 
 	if *this.opts.Complement && (this.alphabet == nil || this.alphabet == seq.Protein) {
 		log.Warn("flag -t (--seq-type) (DNA/RNA) is recommended for computing complement sequences")

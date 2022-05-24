@@ -79,6 +79,16 @@ func (this *SeqKitGrepOptions) InvertMatch(v bool) *SeqKitGrepOptions {
 	return this
 }
 
+func (this *SeqKitGrepOptions) ByName(v bool) *SeqKitGrepOptions {
+	this.inner.ByName = &v
+	return this
+}
+
+func (this *SeqKitGrepOptions) BySeq(v bool) *SeqKitGrepOptions {
+	this.inner.BySeq = &v
+	return this
+}
+
 func (this *SeqKitGrepOptions) OnlyPositiveStrand(v bool) *SeqKitGrepOptions {
 	this.inner.OnlyPositiveStrand = &v
 	return this
@@ -114,8 +124,8 @@ func (this *SeqKitGrepOptions) count(v bool) *SeqKitGrepOptions {
 	return this
 }
 
-func commonGrep(input *api.IDataFrame[string], o *SeqKitGrepOptions) (*api.IDataFrame[string], error) {
-	grep, err := api.AddParam(libSource("GrepPairMatched"), "opts", OptionsToString(o.inner))
+func commonGrep(input *api.IDataFrame[string], opts *GrepOptions) (*api.IDataFrame[string], error) {
+	grep, err := api.AddParam(libSource("GrepPairMatched"), "opts", OptionsToString(*opts))
 	if err != nil {
 		return nil, err
 	}
@@ -130,7 +140,7 @@ func Grep(input *api.IDataFrame[string], o *SeqKitGrepOptions) (*api.IDataFrame[
 	opts := o.inner
 	opts.setDefaults()
 
-	results, err := commonGrep(input, o)
+	results, err := commonGrep(input, &opts)
 	if err != nil {
 		return nil, err
 	}
@@ -161,7 +171,7 @@ func GrepCount(input *api.IDataFrame[string], o *SeqKitGrepOptions) (int64, erro
 	opts := o.inner
 	opts.setDefaults()
 
-	results, err := commonGrep(input, o)
+	results, err := commonGrep(input, &opts)
 	if err != nil {
 		return 0, err
 	}

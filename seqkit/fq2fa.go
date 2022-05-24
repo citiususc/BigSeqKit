@@ -28,7 +28,7 @@ func Fq2Fa(input *api.IDataFrame[string], o *SeqKitFq2FaOptions) (*api.IDataFram
 	}
 	opts := o.inner
 	opts.setDefaults()
-	libprepare, err := api.AddParam(libSource("Fq2Fa"), "opts", OptionsToString(o.inner))
+	libprepare, err := api.AddParam(libSource("Fq2Fa"), "opts", OptionsToString(opts))
 	if err != nil {
 		return nil, err
 	}

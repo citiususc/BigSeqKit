@@ -97,7 +97,7 @@ func Replace(input *api.IDataFrame[string], o *SeqKitReplaceOptions) (*api.IData
 	}
 	opts := o.inner
 	opts.setDefaults()
-	libprepare, err := api.AddParam(libSource("Replace"), "opts", OptionsToString(o.inner))
+	libprepare, err := api.AddParam(libSource("Replace"), "opts", OptionsToString(opts))
 	if err != nil {
 		return nil, err
 	}

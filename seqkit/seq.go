@@ -161,7 +161,7 @@ func Seq(input *api.IDataFrame[string], o *SeqKitSeqOptions) (*api.IDataFrame[st
 	opts := o.inner
 	opts.setDefaults()
 
-	libprepare, err := api.AddParam(libSource("SeqTransform"), "opts", OptionsToString(o.inner))
+	libprepare, err := api.AddParam(libSource("SeqTransform"), "opts", OptionsToString(opts))
 	if err != nil {
 		return nil, err
 	}

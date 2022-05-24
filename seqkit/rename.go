@@ -38,7 +38,7 @@ func Rename(input *api.IDataFrame[string], o *SeqKitRenameOptions) (*api.IDataFr
 	opts := o.inner
 	opts.setDefaults()
 
-	libprepare, err := api.AddParam(libSource("RenamePrepare"), "opts", OptionsToString(o.inner))
+	libprepare, err := api.AddParam(libSource("RenamePrepare"), "opts", OptionsToString(opts))
 	if err != nil {
 		return nil, err
 	}
@@ -53,7 +53,7 @@ func Rename(input *api.IDataFrame[string], o *SeqKitRenameOptions) (*api.IDataFr
 		return nil, err
 	}
 
-	librename, err := api.AddParam(libSource("Rename"), "opts", OptionsToString(o.inner))
+	librename, err := api.AddParam(libSource("Rename"), "opts", OptionsToString(opts))
 	if err != nil {
 		return nil, err
 	}

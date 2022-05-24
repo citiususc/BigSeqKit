@@ -84,7 +84,7 @@ func RmDup(input *api.IDataFrame[string], o *SeqKitRmDupOptions) (*api.IDataFram
 		return nil, fmt.Errorf("flag -s (--by-seq) needed when using -P (--only-positive-strand)")
 	}
 
-	prepare, err := api.AddParam(libSource("RmDupPrepare"), "opts", OptionsToString(o.inner))
+	prepare, err := api.AddParam(libSource("RmDupPrepare"), "opts", OptionsToString(opts))
 	if err != nil {
 		return nil, err
 	}
@@ -99,7 +99,7 @@ func RmDup(input *api.IDataFrame[string], o *SeqKitRmDupOptions) (*api.IDataFram
 		return nil, err
 	}
 
-	check, err := api.AddParam(libSource("RmDupCheck"), "opts", OptionsToString(o.inner))
+	check, err := api.AddParam(libSource("RmDupCheck"), "opts", OptionsToString(opts))
 	if err != nil {
 		return nil, err
 	}
