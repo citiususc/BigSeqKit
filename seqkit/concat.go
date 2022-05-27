@@ -38,7 +38,7 @@ func (this *SeqKitConcatOptions) TwoPass(v string) *SeqKitConcatOptions {
 	return this
 }
 
-func prepare(input *api.IDataFrame[string], opts *ConcatOptions, id string) (*api.IDataFrame[ipair.IPair[string, string]], error) {
+func prepareConcat(input *api.IDataFrame[string], opts *ConcatOptions, id string) (*api.IDataFrame[ipair.IPair[string, string]], error) {
 	libprepare, err := api.AddParam(libSource("ConcatPrepare"), "opts", OptionsToString(*opts))
 	if err != nil {
 		return nil, err
@@ -57,11 +57,11 @@ func Concat(inputA *api.IDataFrame[string], inputB *api.IDataFrame[string], o *S
 	opts := o.inner
 	opts.setDefaults()
 
-	p1, err := prepare(inputA, &opts, "1")
+	p1, err := prepareConcat(inputA, &opts, "1")
 	if err != nil {
 		return nil, err
 	}
-	p2, err := prepare(inputB, &opts, "2")
+	p2, err := prepareConcat(inputB, &opts, "2")
 	if err != nil {
 		return nil, err
 	}

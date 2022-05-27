@@ -61,9 +61,10 @@ func (this *ConcatPrepare) Call(v1 iterator.IReadIterator[string], context api.I
 			fastx.ForcelyOutputFastq = true
 		}
 
-		record.ID = append(record.ID, []byte("\000"+this.id)...)
+		id := string(record.ID)
+		record.ID = append(record.ID, []byte("_"+this.id)...)
 
-		result = append(result, *ipair.New(string(record.ID), string(record.Format(*this.opts.Config.LineWidth))))
+		result = append(result, *ipair.New(id, string(record.Format(*this.opts.Config.LineWidth))))
 	}
 
 	return result, nil
@@ -120,7 +121,7 @@ func (this *ConcatJoin) Call(v ipair.IPair[string, []string], context api.IConte
 			fastx.ForcelyOutputFastq = true
 		}
 
-		sep := bytes.IndexByte(record.ID, '\000')
+		sep := bytes.LastIndexByte(record.ID, '_')
 		i, err := strconv.Atoi(string(record.ID[sep+1:]))
 		if err != nil {
 			return nil, err

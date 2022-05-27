@@ -94,24 +94,33 @@ func NewArrayReader(array []string) io.Reader {
 }
 
 type ArrayReader struct {
-	array []string
-	i     int
-	pos   int
+	array  []string
+	i      int
+	buffer string
+	pos    int
 }
 
 func (this *ArrayReader) Read(p []byte) (n int, err error) {
-	if this.pos == len(this.array[this.i]) {
-		if this.i < len(this.array) {
-			this.pos = 0
-			this.i++
-		} else {
-			err = io.EOF
-			return
+	for n < len(p)-1 {
+		if this.pos >= len(this.buffer) {
+			if this.pos == len(this.buffer) && this.i > 0 {
+				p[n] = '\n'
+				n++
+				this.pos++
+				continue
+			} else if this.i < len(this.array) {
+				this.buffer = this.array[this.i]
+				this.i++
+				this.pos = 0
+			} else {
+				err = io.EOF
+				return
+			}
 		}
+		n2 := copy(p[n:], this.buffer[this.pos:])
+		this.pos += n2
+		n += n2
 	}
-	n = copy(p, this.array[this.i][this.pos:])
-	this.pos += n
-
 	return
 }
 
