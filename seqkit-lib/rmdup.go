@@ -96,7 +96,7 @@ func NewRmDupCheck() any {
 }
 
 type RmDupCheck struct {
-	base.IFlatmap[ipair.IPair[uint64, []string], string]
+	base.IFlatmap[ipair.IPair[int64, []string], string]
 	opts     seqkit.RmDupOptions
 	alphabet *seq.Alphabet
 	mu       sync.Mutex
@@ -117,7 +117,7 @@ func (this *RmDupCheck) Before(context api.IContext) (err error) {
 	return err
 }
 
-func (this *RmDupCheck) Call(v ipair.IPair[uint64, []string], context api.IContext) ([]string, error) {
+func (this *RmDupCheck) Call(v ipair.IPair[int64, []string], context api.IContext) ([]string, error) {
 	if len(v.Second) == 1 {
 		return v.Second, nil
 	}
