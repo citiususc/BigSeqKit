@@ -3,7 +3,10 @@ module seqkit
 go 1.18
 
 require (
+	github.com/dustin/go-humanize v1.0.0
 	github.com/shenwei356/bio v0.7.0
+	github.com/shenwei356/util v0.5.0
+	github.com/tatsushid/go-prettytable v0.0.0-20141013043238-ed2d14c29939
 	ignis v0.0.0
 )
 
@@ -14,8 +17,9 @@ require (
 	github.com/davecgh/go-spew v1.1.1 // indirect
 	github.com/klauspost/compress v1.15.1 // indirect
 	github.com/klauspost/pgzip v1.2.5 // indirect
+	github.com/mattn/go-runewidth v0.0.13 // indirect
 	github.com/pierrec/xxHash v0.1.5 // indirect
-	github.com/shenwei356/util v0.5.0 // indirect
+	github.com/rivo/uniseg v0.2.0 // indirect
 	github.com/shenwei356/xopen v0.2.1 // indirect
 	github.com/ulikunitz/xz v0.5.10 // indirect
 	gopkg.in/check.v1 v1.0.0-20201130134442-10cb98267c6c // indirect

@@ -2,12 +2,15 @@ package main
 
 import (
 	"bytes"
+	"fmt"
+	"github.com/shenwei356/bio/seq"
 	"ignis/executor/api"
 	"ignis/executor/api/base"
 	"ignis/executor/api/function"
 	"ignis/executor/api/iterator"
 	"io"
 	"regexp"
+	"strings"
 )
 
 var reRegion = regexp.MustCompile(`\-?\d+:\-?\d+`)
@@ -173,4 +176,23 @@ func wrapByteSlice(s []byte, width int, buffer *bytes.Buffer) ([]byte, *bytes.Bu
 		}
 	}
 	return buffer.Bytes(), buffer
+}
+
+func parseQualityEncoding(s string) (seq.QualityEncoding, error) {
+	switch strings.ToLower(s) {
+	case "sanger":
+		return seq.Sanger, nil
+	case "solexa":
+		return seq.Solexa, nil
+	case "illumina-1.3+":
+		return seq.Illumina1p3, nil
+	case "illumina-1.5+":
+		return seq.Illumina1p5, nil
+	case "illumina-1.8+":
+		return seq.Illumina1p8, nil
+	case "":
+		return seq.Unknown, nil
+	default:
+		return -1, fmt.Errorf("unsupported quality encoding: %s. available values: 'sanger', 'solexa', 'illumina-1.3+', 'illumina-1.5+', 'illumina-1.8+'", s)
+	}
 }

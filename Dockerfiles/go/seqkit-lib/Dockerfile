@@ -19,7 +19,8 @@ RUN cd /tmp/src && \
     go build -buildmode=plugin -trimpath -o ${IGNIS_GO}/seqkit.so && \
     rm -fR /tmp/src
 
-	
+COPY ${RELPATH}igo-seqkit-build $IGNIS_HOME/bin/igo-seqkit-build
 RUN echo "#!/bin/bash" > ${IGNIS_HOME}/bin/ignis-go-seqkit-lib-install.sh && \
-	chmod +x ${IGNIS_HOME}/bin/ignis-go-seqkit-lib-install.sh
+	chmod +x ${IGNIS_HOME}/bin/ignis-go-seqkit-lib-install.sh && \
+    chmod +x $IGNIS_HOME/bin/igo-seqkit-build
 
