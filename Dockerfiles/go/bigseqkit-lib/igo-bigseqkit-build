@@ -1,0 +1,4 @@
+#!/bin/bash
+
+go mod edit -replace bigseqkit=${IGNIS_GO}/bigseqkit go.mod
+igo-build "$@"

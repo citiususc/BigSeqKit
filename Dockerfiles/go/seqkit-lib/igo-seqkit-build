@@ -1,4 +1,0 @@
-#!/bin/bash
-
-go mod edit -replace seqkit=${IGNIS_GO}/seqkit go.mod
-igo-build "$@"
