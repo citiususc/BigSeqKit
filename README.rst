@@ -16,7 +16,7 @@ BigSeqKit example
 
 	import (
 		"ignis/driver/api"
-		"seqkit"
+		"bigseqkit"
 	)
 	// Auxiliary function for error checking, driver aborts if err is not nil
 	func check[T any](e T, err error) T {if err != nil { panic(err) } else { return e }}
@@ -37,14 +37,14 @@ BigSeqKit example
 		// Initialization of a Go Worker
 		worker := check(api.NewIWorkerDefault(cluster, "go"))
 		// Sequence reading
-		seqs := check(seqkit.ReadFASTA("mysequences.fa", worker))
+		seqs := check(bigseqkit.ReadFASTA("mysequences.fa", worker))
 		// Deletion of duplicate sequences
-		rm_opts := &seqkit.SeqKitRmDupOptions{}
+		rm_opts := &bigseqkit.SeqKitRmDupOptions{}
 		rm_opts.BySeq(true)
-		u_seqs := check(seqkit.RmDup(seqs, rm_opts))
+		u_seqs := check(bigseqkit.RmDup(seqs, rm_opts))
 		// Sort by ID
-		sort_opts := &seqkit.SeqKitSortOptions{}
-		u_sorted_seqs := check(seqkit.Sort(u_seqs, sort_opts))
+		sort_opts := &bigseqkit.SeqKitSortOptions{}
+		u_sorted_seqs := check(bigseqkit.Sort(u_seqs, sort_opts))
 		// Save the result
 		check(0, u_sorted_seqs.SaveAsTextFile("result.fa"))
 	}
@@ -84,7 +84,7 @@ IgnisHPC is a framework that works inside containers, so it is necessary to buil
 	   https://github.com/ignishpc/dockerfiles.git \
 	   https://github.com/ignishpc/backend.git \
 	   https://github.com/ignishpc/core-go.git \
-	   https://github.com/ignishpc/ignis-seqkit.git 
+	   https://github.com/citiususc/BigSeqKit.git 
 
 
 Note that the ``--platform`` parameter is used to specify the target processor architecture. In the example, we build images for *amd64* architectures and those based on PowerPC processors such as the Marconi100 supercomputer. If this parameter is not specified, the target architecture will be the one where the command is executed on.
@@ -99,7 +99,7 @@ To compile the example code, the following command should be executed:
 
 .. code-block:: sh
 
-	docker run --rm -v <example-dir>:/src -w /src ignishpc/go-libs-compiler igo-seqkit-build
+	docker run --rm -v <example-dir>:/src -w /src ignishpc/go-libs-compiler igo-bigseqkit-build
 
 
 Go programming language *compiles folders* instead of particular files, so the example code should be stored inside ``<example-dir>``.
