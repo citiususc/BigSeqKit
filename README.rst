@@ -1,9 +1,9 @@
 =========
 BigSeqKit
 =========
-The NGS raw data are stored in FASTA and FASTQ text-based file formats. In this way, manipulating these files efficiently is essential to analyze and interpret data in any genomics pipeline. Common operations on FASTA/Q files include searching, filtering, sampling, deduplication and sorting, among others. We can find several tools in the literature for FASTA/Q file manipulation but none of them are well fitted for large files of tens of GB (likely TBs in the near future) since mostly they are based on sequential processing. The exception is \emph{SeqKit} that allows some routines to use a few threads but, in any case, the scalability is very limited. 
+The Next Generation Sequencing (NGS) raw data are stored in FASTA and FASTQ text-based file formats. In this way, manipulating these files efficiently is essential to analyze and interpret data in any genomics pipeline. Common operations on FASTA/Q files include searching, filtering, sampling, deduplication and sorting, among others. We can find several tools in the literature for FASTA/Q file manipulation but none of them are well fitted for large files of tens of GB (likely TBs in the near future) since mostly they are based on sequential processing. The exception is *SeqKit* that allows some routines to use a few threads but, in any case, the scalability is very limited.
 
-*BigSeqKit* takes advantage of an HPC-Big Data framework to parallelize the commands included in `SeqKit <https://github.com/shenwei356/seqkit>`_ with the aim of speeding up the manipulation of FASTA/FASTQ files. In this way, in most cases **it is from tens to hundreds of times faster than SeqKit**. At the same time, our tool is easy to use and install on any kind of hardware platform (server or cluster).
+**BigSeqKit** takes advantage of an HPC-Big Data framework to parallelize the commands included in `SeqKit <https://github.com/shenwei356/seqkit>`_ with the aim of speeding up the manipulation of FASTA/FASTQ files. In this way, in most cases **it is from tens to hundreds of times faster than SeqKit**. At the same time, our tool is easy to use and install on any kind of hardware platform (server or cluster).
 
 ------------
 User's Guide
