@@ -3,7 +3,7 @@ BigSeqKit
 =========
 The Next Generation Sequencing (NGS) raw data are stored in FASTA and FASTQ text-based file formats. In this way, manipulating these files efficiently is essential to analyze and interpret data in any genomics pipeline. Common operations on FASTA/Q files include searching, filtering, sampling, deduplication and sorting, among others. We can find several tools in the literature for FASTA/Q file manipulation but none of them are well fitted for large files of tens of GB (likely TBs in the near future) since mostly they are based on sequential processing. The exception is *SeqKit* that allows some routines to use a few threads but, in any case, the scalability is very limited.
 
-To deal with this issue, we introduce **BigSeqKit**, a parallel toolkit to manipulate FASTA/Q files at scale with speed and scalability at its core. **BigSeqKit** takes advantage of an HPC-Big Data framework to parallelize and optimize the commands included in `SeqKit <https://github.com/shenwei356/seqkit>`_. In this way, in most cases **it is from tens to hundreds of times faster than SeqKit**. At the same time, our tool is easy to use and install on any kind of hardware platform (single server or cluster).
+To deal with this issue, we introduce **BigSeqKit**, a parallel toolkit to manipulate FASTA/Q files at scale with speed and scalability at its core. **BigSeqKit** takes advantage of an HPC-Big Data framework (**`IgnisHPC <https://github.com/shenwei356/seqkit>`_**) to parallelize and optimize the commands included in `SeqKit <https://github.com/shenwei356/seqkit>`_. In this way, in most cases **it is from tens to hundreds of times faster than SeqKit**. At the same time, our tool is easy to use and install on any kind of hardware platform (single server or cluster).
 
 In order to improve the usability and facilitate the adoption of **BigSeqKit**,
 it implements the same command interface than `SeqKit <https://bioinf.shenwei.me/seqkit/usage>`_.
@@ -30,7 +30,7 @@ BigSeqKit example
 	func main() {
 		// Initialization of the framework
 		check(0, api.Ignis.Start())
-		// Stop the framework when main end
+		// Stop the framework when main ends
 		defer api.Ignis.Stop()
 		// Resources/Configuration of the cluster
 		prop := check(api.NewIProperties())
@@ -44,7 +44,7 @@ BigSeqKit example
 		worker := check(api.NewIWorkerDefault(cluster, "go"))
 		// Sequence reading
 		seqs := check(bigSeqKit.ReadFASTA("mysequences.fa", worker))
-		// Deletion of duplicate sequences
+		// Deletion of duplicated sequences
 		rm_opts := &bigSeqKit.SeqKitRmDupOptions{}
 		rm_opts.BySeq(true)
 		u_seqs := check(bigSeqKit.RmDup(seqs, rm_opts))
