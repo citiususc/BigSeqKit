@@ -93,6 +93,12 @@ func (this *KitConfig) setDefaults() *KitConfig {
 	setDefault(&this.Quiet, false)
 	setDefault(&this.AlphabetGuessSeqLength, 10000)
 	setDefault(&this.ValidateSeqLength, 10000)
+
+	if *this.IDNCBI {
+		str := `\|([^\|]+)\| `
+		this.IDRegexp = &str
+	}
+
 	return this
 }
 

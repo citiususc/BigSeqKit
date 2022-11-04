@@ -49,6 +49,11 @@ func (this *SeqKitLocateOptions) Config(v *SeqKitConfig) *SeqKitLocateOptions {
 	return this
 }
 
+func (this *SeqKitLocateOptions) Pattern(v []string) *SeqKitLocateOptions {
+	this.inner.Pattern = &v
+	return this
+}
+
 func (this *SeqKitLocateOptions) PatternFile(v string) *SeqKitLocateOptions {
 	this.inner.PatternFile = &v
 	return this

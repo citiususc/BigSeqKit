@@ -17,6 +17,11 @@ RUN cd /tmp/src && \
     go mod edit -replace ignis=${IGNIS_GO}/ignis go.mod && \
     go get && \
     go build -buildmode=plugin -trimpath -o ${IGNIS_GO}/bigseqkit.so && \
+    cd .. && \
+    cd bigseqkit-cli && \
+    go mod edit -replace ignis=${IGNIS_GO}/ignis go.mod && \
+    go get && \
+    go build -o ${IGNIS_HOME}/bin/bigseqkit && \
     rm -fR /tmp/src
 
 COPY ${RELPATH}igo-bigseqkit-build $IGNIS_HOME/bin/igo-bigseqkit-build

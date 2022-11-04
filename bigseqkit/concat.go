@@ -28,7 +28,7 @@ func (this *SeqKitConcatOptions) Config(v *SeqKitConfig) *SeqKitConcatOptions {
 	return this
 }
 
-func (this *SeqKitConcatOptions) Seed(v bool) *SeqKitConcatOptions {
+func (this *SeqKitConcatOptions) Full(v bool) *SeqKitConcatOptions {
 	this.inner.Full = &v
 	return this
 }

@@ -10,11 +10,13 @@ type SeqKitPairOptions struct {
 }
 
 type PairOptions struct {
-	Config KitConfig
+	Config       KitConfig
+	SaveUnpaired *bool
 }
 
 func (this *PairOptions) setDefaults() *PairOptions {
 	this.Config.setDefaults()
+	setDefault(&this.SaveUnpaired, false)
 
 	return this
 }
@@ -24,8 +26,13 @@ func (this *SeqKitPairOptions) Config(v *SeqKitConfig) *SeqKitPairOptions {
 	return this
 }
 
-func preparePair(input *api.IDataFrame[string], opts *ConcatOptions, id string) (*api.IDataFrame[ipair.IPair[string, string]], error) {
-	libprepare, err := api.AddParam(libSource("pairPrepare"), "opts", OptionsToString(*opts))
+func (this *SeqKitPairOptions) SaveUnpaired(v bool) *SeqKitPairOptions {
+	this.inner.SaveUnpaired = &v
+	return this
+}
+
+func preparePair(input *api.IDataFrame[string], opts *PairOptions, id string) (*api.IDataFrame[ipair.IPair[string, string]], error) {
+	libprepare, err := api.AddParam(libSource("PairPrepare"), "opts", OptionsToString(*opts))
 	if err != nil {
 		return nil, err
 	}
@@ -36,18 +43,12 @@ func preparePair(input *api.IDataFrame[string], opts *ConcatOptions, id string) 
 	return api.MapPartitions[string, ipair.IPair[string, string]](input, libprepare)
 }
 
-func Pair(inputA *api.IDataFrame[string], inputB *api.IDataFrame[string], o *SeqKitConcatOptions) (*api.IDataFrame[ipair.IPair[string, string]], error) {
-	if o == nil {
-		o = &SeqKitConcatOptions{}
-	}
-	opts := o.inner
-	opts.setDefaults()
-
-	p1, err := preparePair(inputA, &opts, "1")
+func commonPair(inputA *api.IDataFrame[string], inputB *api.IDataFrame[string], opts *PairOptions) (*api.IPairDataFrame[string, []string], error) {
+	p1, err := preparePair(inputA, opts, "1")
 	if err != nil {
 		return nil, err
 	}
-	p2, err := preparePair(inputB, &opts, "2")
+	p2, err := preparePair(inputB, opts, "2")
 	if err != nil {
 		return nil, err
 	}
@@ -61,6 +62,55 @@ func Pair(inputA *api.IDataFrame[string], inputB *api.IDataFrame[string], o *Seq
 	if err != nil {
 		return nil, err
 	}
+	return grouped, nil
+}
 
-	return api.Flatmap[ipair.IPair[string, []string], ipair.IPair[string, string]](grouped.FromPair(), libSource("Pair"))
+func Pair(inputA *api.IDataFrame[string], inputB *api.IDataFrame[string], o *SeqKitPairOptions) (
+	*api.IDataFrame[ipair.IPair[string, string]], *api.IDataFrame[ipair.IPair[string, string]], error) {
+	if o == nil {
+		o = &SeqKitPairOptions{}
+	}
+	opts := o.inner
+	opts.setDefaults()
+
+	grouped, err := commonPair(inputA, inputB, &opts)
+	if err != nil {
+		return nil, nil, err
+	}
+
+	pairs, err := api.Flatmap[ipair.IPair[string, []string], ipair.IPair[string, string]](grouped.FromPair(), libSource("Pair"))
+	if err != nil {
+		return nil, nil, err
+	}
+
+	if !*opts.SaveUnpaired {
+		return pairs, nil, err
+	}
+	libunpaired, err := api.AddParam(libSource("Pair"), "unpaired", true)
+	if err != nil {
+		return nil, nil, err
+	}
+	unpaired, err := api.Flatmap[ipair.IPair[string, []string], ipair.IPair[string, string]](grouped.FromPair(), libunpaired)
+
+	return pairs, unpaired, nil
+}
+
+func PairIndex(p *api.IDataFrame[ipair.IPair[string, string]], i int) (*api.IDataFrame[string], error) {
+	lib, err := api.AddParam(libSource("PairI"), "i", i)
+	if err != nil {
+		return nil, err
+	}
+	return api.Map[ipair.IPair[string, string], string](p, lib)
+}
+
+func UnpairedId(p *api.IDataFrame[ipair.IPair[string, string]], id string) (*api.IDataFrame[string], error) {
+	lib, err := api.AddParam(libSource("PairF"), "id", id)
+	if err != nil {
+		return nil, err
+	}
+	f, err := p.Filter(lib)
+	if err != nil {
+		return nil, err
+	}
+	return PairIndex(f, 1)
 }

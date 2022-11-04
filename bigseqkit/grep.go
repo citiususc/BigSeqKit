@@ -1,7 +1,6 @@
 package bigseqkit
 
 import (
-	"fmt"
 	"ignis/driver/api"
 	"ignis/executor/api/ipair"
 	"strconv"
@@ -119,11 +118,6 @@ func (this *SeqKitGrepOptions) Circular(v bool) *SeqKitGrepOptions {
 	return this
 }
 
-func (this *SeqKitGrepOptions) count(v bool) *SeqKitGrepOptions {
-	this.inner.Count = &v
-	return this
-}
-
 func commonGrep(input *api.IDataFrame[string], opts *GrepOptions) (*api.IDataFrame[string], error) {
 	grep, err := api.AddParam(libSource("GrepPairMatched"), "opts", OptionsToString(*opts))
 	if err != nil {
@@ -139,15 +133,15 @@ func Grep(input *api.IDataFrame[string], o *SeqKitGrepOptions) (*api.IDataFrame[
 	}
 	opts := o.inner
 	opts.setDefaults()
+	aux := false
+	opts.Count = &aux
 
 	results, err := commonGrep(input, &opts)
 	if err != nil {
 		return nil, err
 	}
 
-	if *opts.Count {
-		return nil, fmt.Errorf("must use GrepCount with count=true")
-	} else if *opts.BySeq && *opts.MaxMismatch > 0 {
+	if *opts.BySeq && *opts.MaxMismatch > 0 {
 		return results, nil
 	} else if *opts.DeleteMatched && !*opts.InvertMatch {
 		f1, err := api.Map[string, ipair.IPair[string, string]](results, libSource("GrepPairMatched"))
@@ -170,14 +164,12 @@ func GrepCount(input *api.IDataFrame[string], o *SeqKitGrepOptions) (int64, erro
 	}
 	opts := o.inner
 	opts.setDefaults()
+	aux := true
+	opts.Count = &aux
 
 	results, err := commonGrep(input, &opts)
 	if err != nil {
 		return 0, err
-	}
-
-	if !*opts.Count {
-		return 0, fmt.Errorf("must use Grep with count=false")
 	}
 
 	count, err := results.Reduce(libSource("GrepReduceCount"))

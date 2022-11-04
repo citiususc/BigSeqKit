@@ -36,6 +36,9 @@ func (this *Fa2Fq) Before(context api.IContext) (err error) {
 	seq.ValidateSeq = false
 	//fai.MapWholeFile = false
 	fileFasta := *this.opts.FastaFile
+	if fileFasta == "" {
+		return fmt.Errorf("flag -f (--fasta-file) needed")
+	}
 
 	this.records, err = fastx.GetSeqsMap(fileFasta, seq.Unlimit, context.Threads(), 10, "")
 	if err != nil {

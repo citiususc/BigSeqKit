@@ -8,7 +8,7 @@ import (
 )
 
 type SeqKitHeadGenomeOptions struct {
-	inner HeadOptions
+	inner HeadGenomeOptions
 }
 
 type HeadGenomeOptions struct {
@@ -28,8 +28,8 @@ func (this *SeqKitHeadGenomeOptions) Config(v *SeqKitConfig) *SeqKitHeadGenomeOp
 	return this
 }
 
-func (this *SeqKitHeadGenomeOptions) N(v int64) *SeqKitHeadGenomeOptions {
-	this.inner.N = &v
+func (this *SeqKitHeadGenomeOptions) MiniCommonWords(v int64) *SeqKitHeadGenomeOptions {
+	this.inner.MiniCommonWords = &v
 	return this
 }
 
