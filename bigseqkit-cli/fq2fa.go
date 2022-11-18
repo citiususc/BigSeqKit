@@ -6,7 +6,7 @@ import (
 	"ignis/driver/api"
 )
 
-func runFq2Fa(input []*api.IDataFrame[string], cmd *cobra.Command, args []string) *api.IDataFrame[string] {
+func runFq2Fa(input []*api.IDataFrame[string], cmd *cobra.Command, args []string, pipe bool) *api.IDataFrame[string] {
 	opts := parseSeqKitFq2FaOptions(cmd)
 	results := make([]*api.IDataFrame[string], len(input))
 	for i := range input {

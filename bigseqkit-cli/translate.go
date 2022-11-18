@@ -6,7 +6,7 @@ import (
 	"ignis/driver/api"
 )
 
-func runTranslate(input []*api.IDataFrame[string], cmd *cobra.Command, args []string) *api.IDataFrame[string] {
+func runTranslate(input []*api.IDataFrame[string], cmd *cobra.Command, args []string, pipe bool) *api.IDataFrame[string] {
 	opts := parseSeqKitTranslateOptions(cmd)
 	results := make([]*api.IDataFrame[string], len(input))
 	for i := range input {

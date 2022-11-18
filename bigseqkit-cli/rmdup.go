@@ -6,7 +6,7 @@ import (
 	"ignis/driver/api"
 )
 
-func runRmDup(input []*api.IDataFrame[string], cmd *cobra.Command, args []string) *api.IDataFrame[string] {
+func runRmDup(input []*api.IDataFrame[string], cmd *cobra.Command, args []string, pipe bool) *api.IDataFrame[string] {
 	opts := parseSeqKitRmDupOptions(cmd)
 	return check(bigseqkit.RmDup(union(cmd, input...), opts))
 }

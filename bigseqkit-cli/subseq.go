@@ -7,7 +7,7 @@ import (
 	"ignis/driver/api"
 )
 
-func runSubseq(input []*api.IDataFrame[string], cmd *cobra.Command, args []string) *api.IDataFrame[string] {
+func runSubseq(input []*api.IDataFrame[string], cmd *cobra.Command, args []string, pipe bool) *api.IDataFrame[string] {
 	opts := parseSeqKitSubseqOptions(cmd)
 	results := make([]*api.IDataFrame[string], len(input))
 	for i := range input {

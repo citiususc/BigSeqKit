@@ -6,7 +6,7 @@ import (
 	"ignis/driver/api"
 )
 
-func runLocate(input []*api.IDataFrame[string], cmd *cobra.Command, args []string) *api.IDataFrame[string] {
+func runLocate(input []*api.IDataFrame[string], cmd *cobra.Command, args []string, pipe bool) *api.IDataFrame[string] {
 	opts := parseSeqKitLocateOptions(cmd)
 	return check(bigseqkit.Locate(union(cmd, input...), opts))
 }

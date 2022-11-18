@@ -6,7 +6,7 @@ import (
 	"ignis/driver/api"
 )
 
-func runRename(input []*api.IDataFrame[string], cmd *cobra.Command, args []string) *api.IDataFrame[string] {
+func runRename(input []*api.IDataFrame[string], cmd *cobra.Command, args []string, pipe bool) *api.IDataFrame[string] {
 	opts := parseSeqKitRenameOptions(cmd)
 	results := make([]*api.IDataFrame[string], len(input))
 	for i := range input {

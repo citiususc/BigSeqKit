@@ -6,7 +6,7 @@ import (
 	"ignis/driver/api"
 )
 
-func runSort(input []*api.IDataFrame[string], cmd *cobra.Command, args []string) *api.IDataFrame[string] {
+func runSort(input []*api.IDataFrame[string], cmd *cobra.Command, args []string, pipe bool) *api.IDataFrame[string] {
 	opts := parseSeqKitSortOptions(cmd)
 	return check(bigseqkit.Sort(union(cmd, input...), opts))
 }

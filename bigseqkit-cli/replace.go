@@ -6,7 +6,7 @@ import (
 	"ignis/driver/api"
 )
 
-func runReplace(input []*api.IDataFrame[string], cmd *cobra.Command, args []string) *api.IDataFrame[string] {
+func runReplace(input []*api.IDataFrame[string], cmd *cobra.Command, args []string, pipe bool) *api.IDataFrame[string] {
 	opts := parseSeqKitReplaceOptions(cmd)
 	results := make([]*api.IDataFrame[string], len(input))
 	for i := range input {

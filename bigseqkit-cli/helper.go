@@ -35,8 +35,16 @@ func checkError(err error) {
 	}
 }
 
-func readSeqs(cmd *cobra.Command, args []string) []*api.IDataFrame[string] {
-	files := getFileListFromArgsAndFile(cmd, args, true, "infile-list", true)
+func readSeqs(cmd *cobra.Command, args []string, pipe bool) []*api.IDataFrame[string] {
+	flag := true
+	if cmd.Use == "faidx" {
+		flag = false
+		if pipe {
+			return make([]*api.IDataFrame[string], 0)
+		}
+	}
+
+	files := getFileListFromArgsAndFile(cmd, args, flag, "infile-list", flag)
 	input := make([]*api.IDataFrame[string], len(files))
 
 	for i, file := range files {
@@ -50,15 +58,18 @@ func readSeqs(cmd *cobra.Command, args []string) []*api.IDataFrame[string] {
 		} else {
 			panic(fmt.Errorf(" <file> must be fasta(.fa) or fastq(.fq)"))
 		}
+		if !flag {
+			break
+		}
 	}
 	return input
 }
 
 func ignisDriver(cmd *cobra.Command, args []string,
-	f func(input []*api.IDataFrame[string], cmd *cobra.Command, args []string) *api.IDataFrame[string]) {
+	f func(input []*api.IDataFrame[string], cmd *cobra.Command, args []string, pipe bool) *api.IDataFrame[string]) {
 	if jobInput != nil {
-		jobInput = append(jobInput, readSeqs(cmd, args)...)
-		jobOuput = f(jobInput, cmd, args)
+		jobInput = append(jobInput, readSeqs(cmd, args, true)...)
+		jobOuput = f(jobInput, cmd, args, true)
 		return
 	}
 
@@ -68,9 +79,13 @@ func ignisDriver(cmd *cobra.Command, args []string,
 	cluster := check(api.NewIClusterDefault())
 	jobWorker = check(api.NewIWorkerDefault(cluster, "go"))
 
-	output := f(readSeqs(cmd, args), cmd, args)
+	output := f(readSeqs(cmd, args, false), cmd, args, false)
 	if output != nil {
-		check(0, output.SaveAsTextFile(getFlagString(cmd, "out-file")))
+		if getFlagBool(cmd, "merge") {
+			checkError(bigseqkit.StoreFASTX(output, getFlagString(cmd, "out-file")))
+		} else {
+			checkError(bigseqkit.StoreFASTXN(output, getFlagString(cmd, "out-file")))
+		}
 	}
 	if fOuput != nil {
 		fOuput()
@@ -114,6 +129,7 @@ func Parser() *cobra.Command {
 	cmd.PersistentFlags().IntP("alphabet-guess-seq-length", "", 10000, "length of sequence prefix of the first FASTA record based on which seqkit guesses the sequence type (0 for whole seq)")
 	cmd.PersistentFlags().StringP("infile-list", "", "", "file of input files list (one file per line), if given, they are appended to files from cli arguments")
 
+	cmd.PersistentFlags().BoolP("merge", "", false, "store all results in a single file. (default false, faster)")
 	cmd.PersistentFlags().BoolP("order", "", false, "preserve the order of the sequences when there is more than one input file. (default false, faster)")
 
 	cmd.CompletionOptions.DisableDefaultCmd = true

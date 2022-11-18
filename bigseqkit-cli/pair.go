@@ -10,7 +10,7 @@ import (
 	"path/filepath"
 )
 
-func runPair(input []*api.IDataFrame[string], cmd *cobra.Command, args []string) *api.IDataFrame[string] {
+func runPair(input []*api.IDataFrame[string], cmd *cobra.Command, args []string, pipe bool) *api.IDataFrame[string] {
 	if len(input) < 2 {
 		checkError(fmt.Errorf("2 files needed"))
 	}
@@ -40,10 +40,12 @@ func runPair(input []*api.IDataFrame[string], cmd *cobra.Command, args []string)
 		}
 	}
 
-	pair, unpaired, err := bigseqkit.Pair(input[0], input[1], opts)
+	pair, unpaired, cache, err := bigseqkit.Pair(input[0], input[1], opts)
 	checkError(err)
 
 	fOuput = func() {
+		checkError(cache.Cache())
+		defer cache.Cache()
 		checkError(pair.Cache())
 		defer pair.Uncache()
 

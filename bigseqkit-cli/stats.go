@@ -8,7 +8,7 @@ import (
 	"strings"
 )
 
-func runStats(input []*api.IDataFrame[string], cmd *cobra.Command, args []string) *api.IDataFrame[string] {
+func runStats(input []*api.IDataFrame[string], cmd *cobra.Command, args []string, pipe bool) *api.IDataFrame[string] {
 	opts := parseSeqKitStatsOptions(cmd)
 	head := ""
 	body := ""

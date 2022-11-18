@@ -40,7 +40,7 @@ func runCmd(c *cmdPipe) {
 	checkError(parser.Execute())
 }
 
-func runPipe(input []*api.IDataFrame[string], cmd *cobra.Command, args []string) *api.IDataFrame[string] {
+func runPipe(input []*api.IDataFrame[string], cmd *cobra.Command, args []string, pipe bool) *api.IDataFrame[string] {
 	job := getFlagString(cmd, "job")
 	if job == "" {
 		checkError(fmt.Errorf("job not defined"))

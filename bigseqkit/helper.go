@@ -176,3 +176,15 @@ func ReadFASTQN(path string, minPartitions int64, worker *api.IWorker) (*api.IDa
 	}
 	return fixer(input, "@")
 }
+
+func StoreFASTX(input *api.IDataFrame[string], path string) error {
+	store, err := api.AddParam(libSource("FileStore"), "path", path)
+	if err != nil {
+		return err
+	}
+	return input.ForeachPartition(store)
+}
+
+func StoreFASTXN(input *api.IDataFrame[string], path string) error {
+	return input.SaveAsTextFile(path)
+}

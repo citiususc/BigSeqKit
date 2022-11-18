@@ -66,33 +66,37 @@ func commonPair(inputA *api.IDataFrame[string], inputB *api.IDataFrame[string], 
 }
 
 func Pair(inputA *api.IDataFrame[string], inputB *api.IDataFrame[string], o *SeqKitPairOptions) (
-	*api.IDataFrame[ipair.IPair[string, string]], *api.IDataFrame[ipair.IPair[string, string]], error) {
+	pairs *api.IDataFrame[ipair.IPair[string, string]],
+	unpaired *api.IDataFrame[ipair.IPair[string, string]],
+	cache *api.IPairDataFrame[string, []string],
+	err error) {
 	if o == nil {
 		o = &SeqKitPairOptions{}
 	}
 	opts := o.inner
 	opts.setDefaults()
 
-	grouped, err := commonPair(inputA, inputB, &opts)
+	cache, err = commonPair(inputA, inputB, &opts)
 	if err != nil {
-		return nil, nil, err
+		return
 	}
+	grouped := cache
 
-	pairs, err := api.Flatmap[ipair.IPair[string, []string], ipair.IPair[string, string]](grouped.FromPair(), libSource("Pair"))
+	pairs, err = api.Flatmap[ipair.IPair[string, []string], ipair.IPair[string, string]](grouped.FromPair(), libSource("Pair"))
 	if err != nil {
-		return nil, nil, err
+		return
 	}
 
 	if !*opts.SaveUnpaired {
-		return pairs, nil, err
+		return
 	}
 	libunpaired, err := api.AddParam(libSource("Pair"), "unpaired", true)
 	if err != nil {
-		return nil, nil, err
+		return
 	}
-	unpaired, err := api.Flatmap[ipair.IPair[string, []string], ipair.IPair[string, string]](grouped.FromPair(), libunpaired)
+	unpaired, err = api.Flatmap[ipair.IPair[string, []string], ipair.IPair[string, string]](grouped.FromPair(), libunpaired)
 
-	return pairs, unpaired, nil
+	return
 }
 
 func PairIndex(p *api.IDataFrame[ipair.IPair[string, string]], i int) (*api.IDataFrame[string], error) {

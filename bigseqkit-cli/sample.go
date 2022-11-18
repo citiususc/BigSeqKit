@@ -7,7 +7,7 @@ import (
 	"ignis/driver/api"
 )
 
-func runSample(input []*api.IDataFrame[string], cmd *cobra.Command, args []string) *api.IDataFrame[string] {
+func runSample(input []*api.IDataFrame[string], cmd *cobra.Command, args []string, pipe bool) *api.IDataFrame[string] {
 	if len(input) != 1 {
 		checkError(fmt.Errorf("only 1 file needed"))
 	}

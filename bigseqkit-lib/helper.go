@@ -8,7 +8,9 @@ import (
 	"ignis/executor/api/base"
 	"ignis/executor/api/function"
 	"ignis/executor/api/iterator"
+	"ignis/executor/core/impi"
 	"io"
+	"os"
 	"regexp"
 	"strings"
 )
@@ -195,4 +197,57 @@ func parseQualityEncoding(s string) (seq.QualityEncoding, error) {
 	default:
 		return -1, fmt.Errorf("unsupported quality encoding: %s. available values: 'sanger', 'solexa', 'illumina-1.3+', 'illumina-1.5+', 'illumina-1.8+'", s)
 	}
+}
+
+func NewFileStore() any {
+	return &FileStore{}
+}
+
+type FileStore struct {
+	base.IForeachPartition[string]
+	path  string
+	execs int
+	id    int
+	err   error
+}
+
+func (this *FileStore) Before(context api.IContext) (err error) {
+	this.err = nil
+	this.path = context.Vars()["path"].(string)
+	this.execs = context.Executors()
+	this.id = context.ExecutorId()
+	for i := 0; i < this.id; i++ {
+		_ = impi.MPI_Barrier(context.MpiGroup())
+	}
+	return nil
+}
+
+func (this *FileStore) After(context api.IContext) (err error) {
+	for i := this.id; i < this.execs; i++ {
+		_ = impi.MPI_Barrier(context.MpiGroup())
+	}
+	return this.err
+}
+
+func (this *FileStore) Call(it iterator.IReadIterator[string], context api.IContext) error {
+	f, err := os.OpenFile(this.path, os.O_APPEND|os.O_CREATE|os.O_WRONLY, 0644)
+	if err != nil {
+		this.err = err
+		return nil
+	}
+	defer f.Close()
+
+	for it.HasNext() {
+		e, err := it.Next()
+		if err != nil {
+			this.err = err
+			return nil
+		}
+		if _, err := f.WriteString(e + "\n"); err != nil {
+			this.err = err
+			return nil
+		}
+	}
+
+	return nil
 }

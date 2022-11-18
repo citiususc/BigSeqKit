@@ -7,7 +7,7 @@ import (
 	"ignis/driver/api"
 )
 
-func runConcat(input []*api.IDataFrame[string], cmd *cobra.Command, args []string) *api.IDataFrame[string] {
+func runConcat(input []*api.IDataFrame[string], cmd *cobra.Command, args []string, pipe bool) *api.IDataFrame[string] {
 	if len(input) < 2 {
 		checkError(fmt.Errorf("at least 2 files needed"))
 	}

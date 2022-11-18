@@ -7,7 +7,7 @@ import (
 	"ignis/driver/api"
 )
 
-func runGrep(input []*api.IDataFrame[string], cmd *cobra.Command, args []string) *api.IDataFrame[string] {
+func runGrep(input []*api.IDataFrame[string], cmd *cobra.Command, args []string, pipe bool) *api.IDataFrame[string] {
 	opts := parseSeqKitGrepOptions(cmd)
 	if getFlagBool(cmd, "count") {
 		fOuput = func() {

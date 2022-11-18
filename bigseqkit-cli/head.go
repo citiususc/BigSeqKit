@@ -6,7 +6,7 @@ import (
 	"ignis/driver/api"
 )
 
-func runHead(input []*api.IDataFrame[string], cmd *cobra.Command, args []string) *api.IDataFrame[string] {
+func runHead(input []*api.IDataFrame[string], cmd *cobra.Command, args []string, pipe bool) *api.IDataFrame[string] {
 	opts := parseSeqKitHeadOptions(cmd)
 	results := make([]*api.IDataFrame[string], len(input))
 	for i := range input {
