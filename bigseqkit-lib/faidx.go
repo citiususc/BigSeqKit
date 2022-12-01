@@ -56,7 +56,7 @@ func NewFaidx() any {
 }
 
 type Faidx struct {
-	base.IMapPartitions[string, string]
+	base.IMapPartitionsWithIndex[string, string]
 	function.IAfterNone
 	offsets                []int64
 	opts                   bigseqkit.FaidxOptions
@@ -94,11 +94,13 @@ func (this *Faidx) Before(context api.IContext) (err error) {
 
 func (this *Faidx) Call(pid int64, v1 iterator.IReadIterator[string], context api.IContext) ([]string, error) {
 	result := make([]string, 0, 100)
-	checkSeqType := true
+
 	seqLen := 0
 	var hasSeq bool
 	var lastName, thisName []byte
 	var id string
+	iqual := int64(-1)
+	qline := false
 	var lastStart int64
 	thisStart := this.offsets[pid]
 	var lineWidths, seqWidths []int
@@ -111,16 +113,14 @@ func (this *Faidx) Call(pid int64, v1 iterator.IReadIterator[string], context ap
 		if err != nil {
 			return nil, err
 		}
-		if checkSeqType {
-			if seqBlock[0] == '@' {
-				return nil, fmt.Errorf("FASTQ format not supported")
-			}
-			checkSeqType = false
-		}
 		for _, line = range bytes.Split([]byte(seqBlock), []byte("\n")) {
-			if line[0] == '>' {
+			if line[0] == '+' && !qline{
+				thisStart += 2
+				iqual = thisStart + 1
+				qline = true
+			} else if (line[0] == '>' || line[0] == '@') && !qline{
 				hasSeq = true
-				thisName = dropCR(line[1 : len(line)-1])
+				thisName = dropCR(line[1:])
 
 				if lastName != nil { // not the first record
 					id = string(parseHeadID(lastName, this.isUsingDefaultIDRegexp))
@@ -155,67 +155,76 @@ func (this *Faidx) Call(pid int64, v1 iterator.IReadIterator[string], context ap
 						seqWidth = seqWidths[0]
 					}
 
-					result = append(result, fmt.Sprintf("%s\t%d\t%d\t%d\t%d\n", id, seqLen, lastStart, seqWidth, lineWidth))
+					if iqual > 0 {
+						result = append(result, fmt.Sprintf("%s\t%d\t%d\t%d\t%d\t%d", id, seqLen, lastStart, seqWidth, lineWidth, iqual))
+					} else {
+						result = append(result, fmt.Sprintf("%s\t%d\t%d\t%d\t%d", id, seqLen, lastStart, seqWidth, lineWidth))
+					}
 
+					iqual = -1
 					seqLen = 0
 				}
 				lineWidths = []int{}
 				seqWidths = []int{}
 				thisStart += int64(len(line))
-				lastStart = thisStart
+				lastStart = thisStart + 1
 				lastName = thisName
 			} else if hasSeq {
-				lineDropCR = dropCR(line[0 : len(line)-1])
-				seqLen += len(lineDropCR)
-				thisStart += int64(len(line))
-
-				lineWidths = append(lineWidths, len(line))
-				seqWidths = append(seqWidths, len(lineDropCR))
+				thisStart += int64(len(line) - 1)
+				if iqual < 0 {
+					lineDropCR = dropCR(line)
+					seqLen += len(lineDropCR)
+					lineWidths = append(lineWidths, len(line)+1)
+					seqWidths = append(seqWidths, len(lineDropCR))
+				} else {
+					qline = false
+				}
 			}
+			thisStart++ //\n
+		}
+		thisStart++ //\n
+	}
+	{ // end of file
+		id = string(parseHeadID(lastName, this.isUsingDefaultIDRegexp))
+
+		// check lineWidths
+		lastLineWidth, chances = -2, 2
+		seenSeqs = false
+		for i := len(lineWidths) - 1; i >= 0; i-- {
+			if !seenSeqs && seqWidths[i] == 0 { // skip empty lines in the end
+				continue
+			}
+			seenSeqs = true
+
+			if lastLineWidth == -2 {
+				lastLineWidth = lineWidths[i]
+				continue
+			}
+			if lineWidths[i] != lastLineWidth {
+				chances--
+				if chances == 0 || lineWidths[i] < lastLineWidth {
+					return nil, fmt.Errorf("different line length in sequence: %s. Please format the file with 'seqkit seq'", id)
+				}
+			}
+			lastLineWidth = lineWidths[i]
+		}
+		// lineWidth = 0
+		if len(lineWidths) > 0 {
+			lineWidth = lineWidths[0]
+		}
+		// seqWidth = 0
+		if len(seqWidths) > 0 {
+			seqWidth = seqWidths[0]
 		}
 
-		{ // end of file
-			id = string(parseHeadID(lastName, this.isUsingDefaultIDRegexp))
+		//if len(line) > 0 && line[len(line)-1] != '\n' {
+		//	fmt.Fprintln(os.Stderr, `[WARNING]: newline character ('\n') not detected at end of file, truncated file?`)
+		//}
 
-			// check lineWidths
-			lastLineWidth, chances = -2, 2
-			seenSeqs = false
-			for i := len(lineWidths) - 1; i >= 0; i-- {
-				if !seenSeqs && seqWidths[i] == 0 { // skip empty lines in the end
-					continue
-				}
-				seenSeqs = true
-
-				if lastLineWidth == -2 {
-					lastLineWidth = lineWidths[i]
-					continue
-				}
-				if lineWidths[i] != lastLineWidth {
-					chances--
-					if chances == 0 || lineWidths[i] < lastLineWidth {
-						return nil, fmt.Errorf("different line length in sequence: %s. Please format the file with 'seqkit seq'", id)
-					}
-				}
-				lastLineWidth = lineWidths[i]
-			}
-			// lineWidth = 0
-			if len(lineWidths) > 0 {
-				lineWidth = lineWidths[0]
-			}
-			// seqWidth = 0
-			if len(seqWidths) > 0 {
-				seqWidth = seqWidths[0]
-			}
-
-			//if len(line) > 0 && line[len(line)-1] != '\n' {
-			//	fmt.Fprintln(os.Stderr, `[WARNING]: newline character ('\n') not detected at end of file, truncated file?`)
-			//}
-
-			seqLen += len(line) + 1 //\n
-
-			result = append(result, fmt.Sprintf("%s\t%d\t%d\t%d\t%d\n", id, seqLen, lastStart, seqWidth, lineWidth))
-
-			seqLen = 0
+		if iqual > 0 {
+			result = append(result, fmt.Sprintf("%s\t%d\t%d\t%d\t%d\t%d", id, seqLen, lastStart, seqWidth, lineWidth, iqual))
+		} else {
+			result = append(result, fmt.Sprintf("%s\t%d\t%d\t%d\t%d", id, seqLen, lastStart, seqWidth, lineWidth))
 		}
 
 	}

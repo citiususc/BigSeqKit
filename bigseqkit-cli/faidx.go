@@ -18,7 +18,6 @@ func runFaidx(input []*api.IDataFrame[string], cmd *cobra.Command, args []string
 	}
 	opts.Regions(files)
 	checkError(input[0].Cache())
-	defer input[0].Uncache()
 
 	idx, queries, err := bigseqkit.Faidx(input[0], opts)
 	checkError(err)
@@ -41,8 +40,7 @@ func parseSeqKitFaidxOptions(cmd *cobra.Command) *bigseqkit.SeqKitFaidxOptions {
 		FullHead(getFlagBool(cmd, "full-head")).
 		IgnoreCase(getFlagBool(cmd, "ignore-case")).
 		UseRegexp(getFlagBool(cmd, "use-regexp")).
-		RegionFile(getFlagString(cmd, "region-file")).
-		IndexFile(getFlagString(cmd, "index-file"))
+		RegionFile(getFlagString(cmd, "region-file"))
 }
 
 func init() {

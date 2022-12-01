@@ -47,9 +47,17 @@ func (this *ReadFixer) Call(it iterator.IReadIterator[string], context api.ICont
 			continue
 		}
 		if v[len(v)-1] == '\n' {
-			result = append(result, this.delim+v[:len(v)-1])
+			if v[0] != this.delim[0] {
+				result = append(result, this.delim+v[:len(v)-1])
+			} else {
+				result = append(result, v[:len(v)-1])
+			}
 		} else {
-			result = append(result, this.delim+v)
+			if v[0] != this.delim[0] {
+				result = append(result, this.delim+v)
+			} else {
+				result = append(result, v)
+			}
 		}
 	}
 	return result, nil

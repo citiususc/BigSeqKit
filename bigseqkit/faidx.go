@@ -15,7 +15,6 @@ type FaidxOptions struct {
 	FullHead   *bool
 	RegionFile *string
 	Regions    *[]string
-	IndexFile  *string
 }
 
 func (this *FaidxOptions) setDefaults() *FaidxOptions {
@@ -25,7 +24,6 @@ func (this *FaidxOptions) setDefaults() *FaidxOptions {
 	setDefault(&this.FullHead, false)
 	setDefault(&this.RegionFile, "")
 	setDefault(&this.Regions, make([]string, 0))
-	setDefault(&this.IndexFile, "")
 
 	return this
 }
@@ -60,11 +58,6 @@ func (this *SeqKitFaidxOptions) Regions(v []string) *SeqKitFaidxOptions {
 	return this
 }
 
-func (this *SeqKitFaidxOptions) IndexFile(v string) *SeqKitFaidxOptions {
-	this.inner.IndexFile = &v
-	return this
-}
-
 func Faidx(input *api.IDataFrame[string], o *SeqKitFaidxOptions) (
 	idx *api.IDataFrame[string], queries *api.IDataFrame[string], err error) {
 	if o == nil {
@@ -73,7 +66,7 @@ func Faidx(input *api.IDataFrame[string], o *SeqKitFaidxOptions) (
 	opts := o.inner
 	opts.setDefaults()
 
-	offsets, err := api.MapPartitionsWithIndex[string, int64](input, libSource("FaidxOffset"))
+	offsets, err := api.MapPartitions[string, int64](input, libSource("FaidxOffset"))
 	if err != nil {
 		return nil, nil, err
 	}
@@ -81,6 +74,10 @@ func Faidx(input *api.IDataFrame[string], o *SeqKitFaidxOptions) (
 	if err != nil {
 		return nil, nil, err
 	}
+	for i := 0; i < len(offsetsArray)-1; i++ {
+		offsetsArray[i+1] = offsetsArray[i]
+	}
+	offsetsArray[0] = 0
 
 	libfaidx, err := api.AddParam(libSource("Faidx"), "offsets", offsetsArray)
 	if err != nil {

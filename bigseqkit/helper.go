@@ -146,7 +146,7 @@ func fixer(input *api.IDataFrame[string], delim string) (*api.IDataFrame[string]
 }
 
 func ReadFASTA(path string, worker *api.IWorker) (*api.IDataFrame[string], error) {
-	input, err := worker.PlainFile(path, '>')
+	input, err := worker.PlainFile(path, ">")
 	if err != nil {
 		return nil, err
 	}
@@ -154,7 +154,7 @@ func ReadFASTA(path string, worker *api.IWorker) (*api.IDataFrame[string], error
 }
 
 func ReadFASTAN(path string, minPartitions int64, worker *api.IWorker) (*api.IDataFrame[string], error) {
-	input, err := worker.PlainFileN(path, minPartitions, '>')
+	input, err := worker.PlainFileN(path, minPartitions, ">")
 	if err != nil {
 		return nil, err
 	}
@@ -162,7 +162,7 @@ func ReadFASTAN(path string, minPartitions int64, worker *api.IWorker) (*api.IDa
 }
 
 func ReadFASTQ(path string, worker *api.IWorker) (*api.IDataFrame[string], error) {
-	input, err := worker.PlainFile(path, '@')
+	input, err := worker.PlainFile(path, "\n@")
 	if err != nil {
 		return nil, err
 	}
@@ -170,7 +170,7 @@ func ReadFASTQ(path string, worker *api.IWorker) (*api.IDataFrame[string], error
 }
 
 func ReadFASTQN(path string, minPartitions int64, worker *api.IWorker) (*api.IDataFrame[string], error) {
-	input, err := worker.PlainFileN(path, minPartitions, '@')
+	input, err := worker.PlainFileN(path, minPartitions, "\n@")
 	if err != nil {
 		return nil, err
 	}

@@ -35,6 +35,15 @@ func checkError(err error) {
 	}
 }
 
+func extension(s string, es []string) bool {
+	for _, e := range es {
+		if strings.HasSuffix(strings.ToLower(s), e) {
+			return true
+		}
+	}
+	return false
+}
+
 func readSeqs(cmd *cobra.Command, args []string, pipe bool) []*api.IDataFrame[string] {
 	flag := true
 	if cmd.Use == "faidx" {
@@ -51,12 +60,22 @@ func readSeqs(cmd *cobra.Command, args []string, pipe bool) []*api.IDataFrame[st
 		fileInfo := check(os.Stat(file))
 		if fileInfo.IsDir() {
 			input[i] = check(jobWorker.PartitionTextFile(file))
-		} else if strings.HasSuffix(strings.ToLower(file), ".fa") {
+		} else if extension(file, []string{".fa", ".fna", ".ffn", ".faa", ".frn"}) {
 			input[i] = check(bigseqkit.ReadFASTA(file, jobWorker))
-		} else if strings.HasSuffix(strings.ToLower(file), ".fq") {
+		} else if extension(file, []string{".fq", ".fastq"}) {
 			input[i] = check(bigseqkit.ReadFASTQ(file, jobWorker))
 		} else {
-			panic(fmt.Errorf(" <file> must be fasta(.fa) or fastq(.fq)"))
+			f := check(os.Open(file))
+			buff := []byte{0}
+			check(f.Read(buff))
+			checkError(f.Close())
+			if buff[0] == '>' {
+				input[i] = check(bigseqkit.ReadFASTA(file, jobWorker))
+			} else if buff[0] == '@' {
+				input[i] = check(bigseqkit.ReadFASTQ(file, jobWorker))
+			} else {
+				panic(fmt.Errorf(" <file> must be fasta or fastq"))
+			}
 		}
 		if !flag {
 			break
