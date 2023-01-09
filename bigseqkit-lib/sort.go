@@ -36,8 +36,7 @@ func (this *SortParseInputString) Before(context api.IContext) (err error) {
 }
 
 func (this *SortParseInputString) Call(v1 iterator.IReadIterator[string], context api.IContext) ([]ipair.IPair[string, string], error) {
-	reader := NewIteratorReader(v1)
-	fastxReader, err := fastx.NewReaderFromIO(this.alphabet, reader, *this.opts.Config.IDRegexp)
+	fastxReader, err := NewSeqParser(this.alphabet, v1, *this.opts.Config.IDRegexp)
 	if err != nil {
 		return nil, err
 	}
@@ -123,8 +122,7 @@ func (this *SortParseInputInt) Before(context api.IContext) (err error) {
 }
 
 func (this *SortParseInputInt) Call(v1 iterator.IReadIterator[string], context api.IContext) ([]ipair.IPair[int32, string], error) {
-	reader := NewIteratorReader(v1)
-	fastxReader, err := fastx.NewReaderFromIO(this.alphabet, reader, *this.opts.Config.IDRegexp)
+	fastxReader, err := NewSeqParser(this.alphabet, v1, *this.opts.Config.IDRegexp)
 	if err != nil {
 		return nil, err
 	}
@@ -223,10 +221,10 @@ func NewValuesIntString() any {
 }
 
 type ValuesIntString struct {
-	base.IMap[ipair.IPair[string, string], string]
+	base.IMap[ipair.IPair[int32, string], string]
 	function.IOnlyCall
 }
 
-func (this *ValuesIntString) Call(v1 ipair.IPair[int, string], context api.IContext) (string, error) {
+func (this *ValuesIntString) Call(v1 ipair.IPair[int32, string], context api.IContext) (string, error) {
 	return v1.Second, nil
 }

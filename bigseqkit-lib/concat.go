@@ -40,10 +40,8 @@ func (this *ConcatPrepare) Call(v1 iterator.IReadIterator[string], context api.I
 	result := make([]ipair.IPair[string, string], 0, 100)
 
 	var record *fastx.Record
-	var fastxReader *fastx.Reader
 
-	reader := NewIteratorReader(v1)
-	fastxReader, err := fastx.NewReaderFromIO(this.alphabet, reader, *this.opts.Config.IDRegexp)
+	fastxReader, err := NewSeqParser(this.alphabet, v1, *this.opts.Config.IDRegexp)
 	if err != nil {
 		return nil, err
 	}
@@ -98,10 +96,8 @@ func (this *ConcatJoin) Call(v ipair.IPair[string, []string], context api.IConte
 
 	result := make([]string, 0, len(v.Second))
 
-	var fastxReader *fastx.Reader
-
-	reader := NewArrayReader(v.Second)
-	fastxReader, err := fastx.NewReaderFromIO(this.alphabet, reader, *this.opts.Config.IDRegexp)
+	reader := NewArrayIterator(v.Second)
+	fastxReader, err := NewSeqParser(this.alphabet, reader, *this.opts.Config.IDRegexp)
 	if err != nil {
 		return nil, err
 	}

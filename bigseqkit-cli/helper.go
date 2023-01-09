@@ -89,6 +89,9 @@ func ignisDriver(cmd *cobra.Command, args []string,
 	if jobInput != nil {
 		jobInput = append(jobInput, readSeqs(cmd, args, true)...)
 		jobOuput = f(jobInput, cmd, args, true)
+		if getFlagInt(cmd, "partitions") > 0 {
+			jobOuput = check(jobOuput.Repartition(int64(getFlagInt(cmd, "partitions")), true, false))
+		}
 		return
 	}
 
@@ -99,6 +102,9 @@ func ignisDriver(cmd *cobra.Command, args []string,
 	jobWorker = check(api.NewIWorkerDefault(cluster, "go"))
 
 	output := f(readSeqs(cmd, args, false), cmd, args, false)
+	if getFlagInt(cmd, "partitions") > 0 {
+		output = check(output.Repartition(int64(getFlagInt(cmd, "partitions")), true, false))
+	}
 	if output != nil {
 		if getFlagBool(cmd, "merge") {
 			checkError(bigseqkit.StoreFASTX(output, getFlagString(cmd, "out-file")))
@@ -149,6 +155,7 @@ func Parser() *cobra.Command {
 	cmd.PersistentFlags().StringP("infile-list", "", "", "file of input files list (one file per line), if given, they are appended to files from cli arguments")
 
 	cmd.PersistentFlags().BoolP("merge", "", false, "store all results in a single file. (default false, faster)")
+	cmd.PersistentFlags().IntP("partitions", "", 0, "set number of partitions to store the output (0 is auto)")
 	cmd.PersistentFlags().BoolP("order", "", false, "preserve the order of the sequences when there is more than one input file. (default false, faster)")
 
 	cmd.CompletionOptions.DisableDefaultCmd = true

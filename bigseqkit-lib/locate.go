@@ -207,8 +207,7 @@ func (this *Locate) Call(pid int64, it iterator.IReadIterator[string], context a
 
 	if *this.opts.MaxMismatch > 0 || *this.opts.UseFmi {
 
-		reader := NewIteratorReader(it)
-		fastxReader, err := fastx.NewReaderFromIO(this.alphabet, reader, *this.opts.Config.IDRegexp)
+		fastxReader, err := NewSeqParser(this.alphabet, it, *this.opts.Config.IDRegexp)
 		if err != nil {
 			return nil, err
 		}
@@ -407,8 +406,7 @@ func (this *Locate) Call(pid int64, it iterator.IReadIterator[string], context a
 		sfmi = fmi.NewFMIndex()
 	}
 
-	reader := NewIteratorReader(it)
-	fastxReader, err := fastx.NewReaderFromIO(this.alphabet, reader, *this.opts.Config.IDRegexp)
+	fastxReader, err := NewSeqParser(this.alphabet, it, *this.opts.Config.IDRegexp)
 	if err != nil {
 		return nil, err
 	}

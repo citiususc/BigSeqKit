@@ -162,7 +162,7 @@ func ReadFASTAN(path string, minPartitions int64, worker *api.IWorker) (*api.IDa
 }
 
 func ReadFASTQ(path string, worker *api.IWorker) (*api.IDataFrame[string], error) {
-	input, err := worker.PlainFile(path, "\n@")
+	input, err := worker.PlainFile(path, "\n@!\n+")
 	if err != nil {
 		return nil, err
 	}
@@ -170,7 +170,7 @@ func ReadFASTQ(path string, worker *api.IWorker) (*api.IDataFrame[string], error
 }
 
 func ReadFASTQN(path string, minPartitions int64, worker *api.IWorker) (*api.IDataFrame[string], error) {
-	input, err := worker.PlainFileN(path, minPartitions, "\n@")
+	input, err := worker.PlainFileN(path, minPartitions, "\n@!\n+")
 	if err != nil {
 		return nil, err
 	}
@@ -182,7 +182,12 @@ func StoreFASTX(input *api.IDataFrame[string], path string) error {
 	if err != nil {
 		return err
 	}
-	return input.ForeachPartition(store)
+	res, err := api.MapPartitionsWithIndex[string, string](input, store)
+	if err != nil {
+		return err
+	}
+	_, err = res.Count()
+	return err
 }
 
 func StoreFASTXN(input *api.IDataFrame[string], path string) error {

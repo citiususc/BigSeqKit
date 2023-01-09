@@ -35,8 +35,7 @@ func (this *RenamePrepare) Before(context api.IContext) (err error) {
 }
 
 func (this *RenamePrepare) Call(v1 iterator.IReadIterator[string], context api.IContext) ([]ipair.IPair[string, string], error) {
-	reader := NewIteratorReader(v1)
-	fastxReader, err := fastx.NewReaderFromIO(this.alphabet, reader, *this.opts.Config.IDRegexp)
+	fastxReader, err := NewSeqParser(this.alphabet, v1, *this.opts.Config.IDRegexp)
 	if err != nil {
 		return nil, err
 	}
@@ -94,8 +93,8 @@ func (this *Rename) Call(v1 ipair.IPair[string, []string], context api.IContext)
 		return v1.Second, nil
 	}
 
-	reader := NewArrayReader(v1.Second)
-	fastxReader, err := fastx.NewReaderFromIO(this.alphabet, reader, *this.opts.Config.IDRegexp)
+	reader := NewArrayIterator(v1.Second)
+	fastxReader, err := NewSeqParser(this.alphabet, reader, *this.opts.Config.IDRegexp)
 	if err != nil {
 		return nil, err
 	}

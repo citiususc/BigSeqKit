@@ -46,8 +46,7 @@ func (this *Stats) Before(context api.IContext) (err error) {
 }
 
 func (this *Stats) Call(v1 iterator.IReadIterator[string], context api.IContext) ([]map[int64]int64, error) {
-	reader := NewIteratorReader(v1)
-	fastxReader, err := fastx.NewReaderFromIO(this.alphabet, reader, *this.opts.Config.IDRegexp)
+	fastxReader, err := NewSeqParser(this.alphabet, v1, *this.opts.Config.IDRegexp)
 	if err != nil {
 		return nil, err
 	}

@@ -255,7 +255,6 @@ func (this *Grep) Before(context api.IContext) (err error) {
 func (this *Grep) grepBySeqMismatches(pid int64, it iterator.IReadIterator[string], context api.IContext) ([]string, error) {
 	// only for searching with sequences and mismatch > 0, were FMI is very slow
 	result := make([]string, 0, 100)
-	var fastxReader *fastx.Reader
 	var record *fastx.Record
 	strands := []byte{'+', '-'}
 	count := int64(0)
@@ -263,8 +262,7 @@ func (this *Grep) grepBySeqMismatches(pid int64, it iterator.IReadIterator[strin
 	justCount := *this.opts.Count
 
 	var err error
-	reader := NewIteratorReader(it)
-	fastxReader, err = fastx.NewReaderFromIO(this.alphabet, reader, *this.opts.Config.IDRegexp)
+	fastxReader, err := NewSeqParser(this.alphabet, it, *this.opts.Config.IDRegexp)
 	if err != nil {
 		return nil, err
 	}
@@ -385,8 +383,7 @@ func (this *Grep) grepGeneral(pid int64, it iterator.IReadIterator[string], cont
 
 	justCount := *this.opts.Count
 
-	reader := NewIteratorReader(it)
-	fastxReader, err := fastx.NewReaderFromIO(this.alphabet, reader, *this.opts.Config.IDRegexp)
+	fastxReader, err := NewSeqParser(this.alphabet, it, *this.opts.Config.IDRegexp)
 	if err != nil {
 		return nil, err
 	}

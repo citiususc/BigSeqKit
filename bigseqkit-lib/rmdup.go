@@ -44,11 +44,9 @@ func (this *RmDupPrepare) Call(v1 iterator.IReadIterator[string], context api.IC
 	result := make([]ipair.IPair[int64, string], 0, 100)
 
 	var record *fastx.Record
-	var fastxReader *fastx.Reader
 	var subject uint64
 
-	reader := NewIteratorReader(v1)
-	fastxReader, err := fastx.NewReaderFromIO(this.alphabet, reader, *this.opts.Config.IDRegexp)
+	fastxReader, err := NewSeqParser(this.alphabet, v1, *this.opts.Config.IDRegexp)
 	if err != nil {
 		return nil, err
 	}
@@ -123,7 +121,6 @@ func (this *RmDupCheck) Call(v ipair.IPair[int64, []string], context api.IContex
 	}
 
 	var record *fastx.Record
-	var fastxReader *fastx.Reader
 	var subject string
 	removed := int64(0)
 
@@ -141,8 +138,8 @@ func (this *RmDupCheck) Call(v ipair.IPair[int64, []string], context api.IContex
 		names = make(map[string][]string)
 	}
 
-	reader := NewArrayReader(v.Second)
-	fastxReader, err := fastx.NewReaderFromIO(this.alphabet, reader, *this.opts.Config.IDRegexp)
+	reader := NewArrayIterator(v.Second)
+	fastxReader, err := NewSeqParser(this.alphabet, reader, *this.opts.Config.IDRegexp)
 	if err != nil {
 		return nil, err
 	}

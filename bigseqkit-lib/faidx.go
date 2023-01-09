@@ -26,10 +26,6 @@ type rangeQuery struct {
 	Region [2]int
 }
 
-var reCheckIDregexpStr = regexp.MustCompile(`\(.+\)`)
-var defaultIDRegexp = `^(\S+)\s?`
-var IDRegexp = regexp.MustCompile(defaultIDRegexp)
-
 func NewFaidxOffset() any {
 	return &FaidxOffset{}
 }
@@ -114,11 +110,11 @@ func (this *Faidx) Call(pid int64, v1 iterator.IReadIterator[string], context ap
 			return nil, err
 		}
 		for _, line = range bytes.Split([]byte(seqBlock), []byte("\n")) {
-			if line[0] == '+' && !qline{
+			if line[0] == '+' && !qline {
 				thisStart += 2
 				iqual = thisStart + 1
 				qline = true
-			} else if (line[0] == '>' || line[0] == '@') && !qline{
+			} else if (line[0] == '>' || line[0] == '@') && !qline {
 				hasSeq = true
 				thisName = dropCR(line[1:])
 
@@ -251,6 +247,7 @@ func (this *FaidxQuery) Before(context api.IContext) (err error) {
 	this.opts = bigseqkit.StringToOptions[bigseqkit.FaidxOptions](context.Vars()["opts"].(string))
 	this.alphabet, err = this.opts.Config.GetAlphabet()
 	fai.MapWholeFile = true
+	seq.ValidateSeq = false
 	var idRegexp string
 
 	if *this.opts.FullHead {
@@ -332,8 +329,7 @@ func (this *FaidxQuery) Before(context api.IContext) (err error) {
 }
 
 func (this *FaidxQuery) Call(v1 iterator.IReadIterator[string], context api.IContext) ([]string, error) {
-	reader := NewIteratorReader(v1)
-	fastxReader, err := fastx.NewReaderFromIO(this.alphabet, reader, *this.opts.Config.IDRegexp)
+	fastxReader, err := NewSeqParser(this.alphabet, v1, *this.opts.Config.IDRegexp)
 	if err != nil {
 		return nil, err
 	}
