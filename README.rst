@@ -121,7 +121,7 @@ BigSeqKit as a library
 	ignis.Ignis.start()
 	# Resources/Configuration of the cluster
 	prop = ignis.IProperties()
-	prop["ignis.executor.image"] = "ignishpc/go"
+	prop["ignis.executor.image"] = "ignishpc/full"
 	prop["ignis.executor.instances"] = "2"
 	prop["ignis.executor.cores"] = "4"
 	prop["ignis.executor.memory"] = "1GB"
