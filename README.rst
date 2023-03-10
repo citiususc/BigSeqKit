@@ -16,7 +16,7 @@ BigSeqKit from the command line (CLI)
 
 BigSeqKit (and IgnisHPC) can be executed on different execution environments. In this case, we will focus on two common scenarios: running on a local computer, and a deployment on a HPC cluster that uses Slurm as workload manager. For more details, IgnisHPC has an online documentation available for users `https://ignishpc.readthedocs.io`.
 
-First, we will install the ``ignis-deploy`` script using ``pip`` and download the precompiled IgnisHPC image (required only first time):
+First, we will install the ``ignis-deploy`` script using ``pip`` (required only first time):
 
 .. code-block:: sh
 
@@ -26,6 +26,8 @@ Local server (Docker)
 ^^^^^^^^^^^^^^^^^^^^^
 
 To execute *BigSeqKit* on a local server is necessary to install Docker (please refer to `Docker <https://docs.docker.com/get-docker/>`_ for instructions).
+
+Download the precompiled IgnisHPC image (required only first time):
 
 .. code-block:: sh
 
