@@ -21,41 +21,44 @@ First, we will install the ``ignis-deploy`` script using ``pip`` and download th
 .. code-block:: sh
 
 	pip install ignishpc
-	docker pull ignishpc/full
 
 Local server (Docker)
 ^^^^^^^^^^^^^^^^^^^^^
 
 To execute *BigSeqKit* on a local server is necessary to install Docker (please refer to `Docker <https://docs.docker.com/get-docker/>`_ for instructions).
 
+.. code-block:: sh
+
+	docker pull ignishpc/full
+
 Extract ``ignis-submit`` script to use it without a container (required only first time):
 
 .. code-block:: sh
 
-		docker run --rm -v $(pwd):/target ignishpc/submitter ignis-export /target
+	docker run --rm -v $(pwd):/target ignishpc/submitter ignis-export /target
 
 Set the following environment variables:
 
 .. code-block:: sh
 
-		# set current directory as job directory
-		export IGNIS_DFS_ID=$(pwd)
-		# set docker as scheduler
-		export IGNIS_SCHEDULER_TYPE=docker
-		# set where docker is available
-		export IGNIS_SCHEDULER_URL=/var/run/docker.sock
+	# set current directory as job directory
+	export IGNIS_DFS_ID=$(pwd)
+	# set docker as scheduler
+	export IGNIS_SCHEDULER_TYPE=docker
+	# set where docker is available
+	export IGNIS_SCHEDULER_URL=/var/run/docker.sock
 
 Now it is only necessary to select command or routine (see a complete list `here <https://bioinf.shenwei.me/seqkit/usage>`_) and pass its arguments through command line following the syntax:
 
 .. code-block:: sh
 
-		./ignis/bin/ignis-submit ignishpc/full bigseqkit <cmd> <arguments>
+	./ignis/bin/ignis-submit ignishpc/full bigseqkit <cmd> <arguments>
 
 For example, the following expression uses the routine *seq* to print the name of the sequences included in a FASTA file to an output file:
 
 .. code-block:: sh
 
-		./ignis/bin/ignis-submit ignishpc/full bigseqkit seq -n -o names.txt input-file.fa
+	./ignis/bin/ignis-submit ignishpc/full bigseqkit seq -n -o names.txt input-file.fa
 
 HPC Cluster (Slurm and Singularity)
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
