@@ -74,7 +74,7 @@ func readSeqs(cmd *cobra.Command, args []string, pipe bool) []*api.IDataFrame[st
 			} else if buff[0] == '@' {
 				input[i] = check(bigseqkit.ReadFASTQ(file, jobWorker))
 			} else {
-				panic(fmt.Errorf(" <file> must be fasta or fastq"))
+				checkError(fmt.Errorf(" <file> must be fasta or fastq"))
 			}
 		}
 		if !flag {
@@ -106,10 +106,24 @@ func ignisDriver(cmd *cobra.Command, args []string,
 		output = check(output.Repartition(int64(getFlagInt(cmd, "partitions")), true, false))
 	}
 	if output != nil {
+		out := getFlagString(cmd, "out-file")
+
+		if out == "" {
+			files := getFileListFromArgsAndFile(cmd, args, false, "infile-list", false)
+			job := os.Getenv("IGNIS_JOB_NAME")
+			if len(files) == 1 {
+				out = files[0] + "-out"
+			} else if len(job) > 0{
+				out = job + "-out"
+			} else {
+				checkError(fmt.Errorf("out file -o required"))
+			}
+		}
+
 		if getFlagBool(cmd, "merge") {
-			checkError(bigseqkit.StoreFASTX(output, getFlagString(cmd, "out-file")))
+			checkError(bigseqkit.StoreFASTX(output, out))
 		} else {
-			checkError(bigseqkit.StoreFASTXN(output, getFlagString(cmd, "out-file")))
+			checkError(bigseqkit.StoreFASTXN(output, out))
 		}
 	}
 	if fOuput != nil {
