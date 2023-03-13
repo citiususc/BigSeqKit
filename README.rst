@@ -152,10 +152,19 @@ The code starts initializing the IgnisHPC framework (line 5). Next, a cluster of
 Local server (Docker)
 ^^^^^^^^^^^^^^^^^^^^^
 
+Download the precompiled IgnisHPC image (only first time):
+
 .. code-block:: sh
 
-	# Extract ignis-submit for use without a container (only first time)
+	docker pull ignishpc/full
+
+Extract ``ignis-submit`` for use without a container (only first time):
+
+.. code-block:: sh
+
 	docker run --rm -v $(pwd):/target ignishpc/submitter ignis-export /target
+
+.. code-block:: sh
 
 	# set current directory as job directory
 	export IGNIS_DFS_ID=$(pwd)
