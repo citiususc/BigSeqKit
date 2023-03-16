@@ -11,7 +11,7 @@ func runGrep(input []*api.IDataFrame[string], cmd *cobra.Command, args []string,
 	opts := parseSeqKitGrepOptions(cmd)
 	if getFlagBool(cmd, "count") {
 		fOuput = func() {
-			print(check(bigseqkit.GrepCount(union(cmd, input...), opts)))
+			fmt.Print(check(bigseqkit.GrepCount(union(cmd, input...), opts)))
 		}
 		return nil
 	}

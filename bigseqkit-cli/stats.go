@@ -17,11 +17,11 @@ func runStats(input []*api.IDataFrame[string], cmd *cobra.Command, args []string
 		table := check(bigseqkit.StatsString(fmt.Sprintf("input%d", i), "N/A", input[i], opts))
 		lines := strings.Split(table, "\n")
 		head = lines[0] + "\n"
-		body += lines[0] + "\n"
+		body += strings.Join(lines[1:], "\n") + "\n"
 	}
 
 	fOuput = func() {
-		print(head + body)
+		fmt.Print(head + body)
 	}
 
 	return nil
