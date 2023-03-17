@@ -118,7 +118,8 @@ BigSeqKit as a library
 *BigSeqKit* can also be used as a bioinformatics library. It is worth noting that *BigSeqKit* was implemented in Go language. However, thanks to the multi-language support provided by IgnisHPC, it is possible to call *BigSeqKit* routines from C/C++, Python, Java and Go applications without additional overhead. An example of Python code is shown below:
 
 .. code-block:: python
-
+	#!/bin/env python3
+	
 	import ignis
 	import bigseqkit
 
