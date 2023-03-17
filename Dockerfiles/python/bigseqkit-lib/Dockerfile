@@ -11,6 +11,6 @@ RUN ${IGNIS_HOME}/bin/ignis-python-install.sh && \
     mkdir -p ${IGNIS_HOME}/core/python/bigseqkit-py && \
     mv /tmp/src/* ${IGNIS_HOME}/core/python/bigseqkit-py && \
     rm -fR /tmp/src && \
-    echo "#!/bin/bash\npython3 ${IGNIS_HOME}/core/python/bigseqkit-py/setup.py develop" > ${IGNIS_HOME}/bin/ignis-python-bigseqkit-lib-install.sh && \
+    echo "#!/bin/bash\n cd ${IGNIS_HOME}/core/python/bigseqkit-py\n python3 setup.py develop" > ${IGNIS_HOME}/bin/ignis-python-bigseqkit-lib-install.sh && \
     chmod +x ${IGNIS_HOME}/bin/ignis-python-bigseqkit-lib-install.sh
 

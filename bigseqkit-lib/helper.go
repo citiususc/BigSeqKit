@@ -396,15 +396,23 @@ func (this *FileStore) Before(context api.IContext) (err error) {
 	this.path = context.Vars()["path"].(string)
 	this.execs = context.Executors()
 	this.id = context.ExecutorId()
-	for i := 0; i < this.id; i++ {
-		_ = impi.MPI_Barrier(context.MpiGroup())
+	if this.id > 0 {
+		n := impi.C_int(0)
+		if err := impi.MPI_Recv(impi.P(&n), 1, impi.MPI_INT, impi.C_int(this.id-1), 0, context.MpiGroup(),
+			impi.MPI_STATUS_IGNORE); err != nil {
+			return err
+		}
+		this.part = int64(n)
+		this.f, err = os.OpenFile(this.path, os.O_APPEND|os.O_WRONLY, 0644)
+	} else {
+		this.part = 0
+		this.f, err = os.OpenFile(this.path, os.O_CREATE|os.O_WRONLY, 0644)
 	}
-	this.f, err = os.OpenFile(this.path, os.O_APPEND|os.O_CREATE|os.O_WRONLY, 0644)
 	this.buff = bufio.NewWriterSize(this.f, 64*1024*1024)
 	this.sync = make([]chan int, 0)
-	this.part = -1
 	for i := 0; i < context.Threads(); i++ {
-		this.sync = append(this.sync, make(chan int))
+		this.sync = append(this.sync, make(chan int, 1))
+		this.sync[i] <- 0
 	}
 	return
 }
@@ -414,8 +422,11 @@ func (this *FileStore) After(context api.IContext) (err error) {
 		return err
 	}
 	this.f.Close()
-	for i := this.id; i < this.execs; i++ {
-		_ = impi.MPI_Barrier(context.MpiGroup())
+	if this.id < this.execs-1 {
+		n := impi.C_int(this.part)
+		if err := impi.MPI_Send(impi.P(&n), 1, impi.MPI_INT, impi.C_int(this.id+1), 0, context.MpiGroup()); err != nil {
+			return err
+		}
 	}
 	return this.err
 }
@@ -425,9 +436,6 @@ func (this *FileStore) Call(pid int64, it iterator.IReadIterator[string], contex
 		<-this.sync[context.ThreadId()]
 		if this.part == pid {
 			break
-		}
-		if this.part == -1 && context.ThreadId() == 0 {
-			this.part = pid
 		}
 	}
 	for it.HasNext() {
@@ -444,7 +452,9 @@ func (this *FileStore) Call(pid int64, it iterator.IReadIterator[string], contex
 
 	this.part++
 	for i := 0; i < context.Threads(); i++ {
-		this.sync[i] <- 0
+		if len(this.sync[i]) == 0 {
+			this.sync[i] <- 0
+		}
 	}
 	return []string{""}, nil
 }
