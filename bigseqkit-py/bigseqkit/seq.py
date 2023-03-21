@@ -123,7 +123,7 @@ class SeqOptions:
         return self
 
 
-def Seq(input: IDataFrame, o: SeqKitSeqOptions = None, **kwargs):
+def seq(input: IDataFrame, o: SeqKitSeqOptions = None, **kwargs):
     if o is None:
         o = SeqKitSeqOptions()
     return o._run(input, **kwargs)

@@ -1,2 +1,2 @@
-from bigseqkit.helper import SeqKitConfig
-from bigseqkit.seq import SeqKitConfig, Seq
+from bigseqkit.helper import SeqKitConfig, readFASTA, readFASTQ, StoreFASTX, StoreFASTXN
+from bigseqkit.seq import SeqKitConfig, seq

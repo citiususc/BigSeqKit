@@ -137,7 +137,7 @@ BigSeqKit as a library
 	# Initialization of a Go Worker
 	worker = ignis.IWorker(cluster, "go")
 	# Sequence reading
-	seqs = bigseqkit.readFASTA("file.fa")
+	seqs = bigseqkit.readFASTA("file.fa", worker)
 	# Obtain Sequence names
 	names = bigseqkit.seq(seqs, name=True)
 	# Save the result
