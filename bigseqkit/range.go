@@ -3,7 +3,6 @@ package bigseqkit
 import (
 	"fmt"
 	"ignis/driver/api"
-	"regexp"
 	"strconv"
 	"strings"
 )
@@ -43,10 +42,6 @@ func Range(input *api.IDataFrame[string], o *SeqKitRangeOptions) (*api.IDataFram
 
 	if *opts.Range == "" {
 		return nil, fmt.Errorf("flag -r (--range) needed")
-	}
-	var reRegion = regexp.MustCompile(`\-?\d+:\-?\d+`)
-	if !reRegion.MatchString(*opts.Range) {
-		return nil, fmt.Errorf(`invalid range: %s. type "seqkit range -h" for more examples`, *opts.Range)
 	}
 
 	r := strings.Split(*opts.Range, ":")
@@ -88,7 +83,7 @@ func Range(input *api.IDataFrame[string], o *SeqKitRangeOptions) (*api.IDataFram
 	}
 
 	if start <= end {
-		return nil, fmt.Errorf(" start must be > than end")
+		return nil, fmt.Errorf("start must be > than end")
 	}
 
 	libprepare := libSource("RangePrepare")

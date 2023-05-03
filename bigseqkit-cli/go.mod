@@ -1,6 +1,6 @@
 module bigseqkit-cli
 
-go 1.18
+go 1.20
 
 require (
 	bigseqkit v0.0.0

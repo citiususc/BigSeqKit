@@ -1,2 +1,21 @@
 from bigseqkit.helper import SeqKitConfig, readFASTA, readFASTQ, StoreFASTX, StoreFASTXN
-from bigseqkit.seq import SeqKitConfig, seq
+from bigseqkit.common import SeqKitCommonOptions, common
+from bigseqkit.concat import SeqKitConcatOptions, concat
+from bigseqkit.duplicate import SeqKitDuplicateOptions, duplicate
+from bigseqkit.fa2fq import SeqKitFa2FqOptions, fa2fq
+from bigseqkit.faidx import SeqKitFaidxOptions, faidx
+from bigseqkit.fq2fa import SeqKitFq2FaOptions, fq2fa
+from bigseqkit.grep import SeqKitGrepOptions, grep
+from bigseqkit.head import SeqKitHeadOptions, head
+from bigseqkit.head_genome import SeqKitHeadGenomeOptions, headGenome
+from bigseqkit.locate import SeqKitLocateOptions, locate
+from bigseqkit.range import SeqKitRangeOptions, range
+from bigseqkit.rename import SeqKitRenameOptions, rename
+from bigseqkit.replace import SeqKitReplaceOptions, replace
+from bigseqkit.rmdup import SeqKitRmDupOptions, rmDup
+from bigseqkit.sample import SeqKitSampleOptions, sample
+from bigseqkit.seq import SeqKitSeqOptions, seq
+from bigseqkit.sort import SeqKitSortOptions, sort
+from bigseqkit.subseq import SeqKitSubseqOptions, subSeq
+from bigseqkit.suffle import SeqKitShuffleOptions, suffle
+from bigseqkit.translate import SeqKitTranslateOptions, translate

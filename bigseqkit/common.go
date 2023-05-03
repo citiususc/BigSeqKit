@@ -103,7 +103,7 @@ func Common(inputA *api.IDataFrame[string], inputB *api.IDataFrame[string], o *S
 	if err != nil {
 		return nil, err
 	}
-	join, err = api.AddParam(join, "ids", len(inputN)+1)
+	join, err = api.AddParam(join, "ids", len(inputN)+2)
 	if err != nil {
 		return nil, err
 	}
