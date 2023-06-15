@@ -1,3 +1,6 @@
+.. image:: ./logo.svg
+   :width: 400
+
 =========
 BigSeqKit
 =========
