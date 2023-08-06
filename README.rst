@@ -10,6 +10,10 @@ To deal with this issue, we introduce **BigSeqKit**, a parallel toolkit to manip
 
 In order to improve the usability and facilitate the adoption of *BigSeqKit*, it implements the same command interface than `SeqKit <https://bioinf.shenwei.me/seqkit/usage>`_.
 
+If you use *BigSeqKit*, please cite the following publication:
+
+César Piñeiro and Juan C. Pichel. BigSeqKit: a parallel Big Data toolkit to process FASTA and FASTQ files at scale, GigaScience, Vol. 12, 2023, `https://doi.org/10.1093/gigascience/giad062`
+
 ------------
 User's Guide
 ------------
